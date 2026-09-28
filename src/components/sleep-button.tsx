@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSleep } from "@/context/sleep-context";
-import { MoonIcon, RainIcon } from "@/components/icons";
+import { RainIcon } from "@/components/icons";
 import { SLEEP_PRESETS } from "@/lib/sleep-sounds";
 
 export function SleepButton() {
@@ -35,7 +35,7 @@ export function SleepButton() {
       {open ? (
         <div className="pointer-events-auto mb-2 w-64 origin-bottom-right rounded-xl border border-line bg-elevated p-3 shadow-2xl">
           <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-muted">
-            Sleep sounds
+            Rain sounds
           </p>
 
           <ul className="flex flex-col gap-0.5">
@@ -76,7 +76,7 @@ export function SleepButton() {
               step={0.01}
               value={volume}
               onChange={(event) => setVolume(Number(event.target.value))}
-              aria-label="Sleep sound volume"
+              aria-label="Rain sound volume"
               className="h-1 flex-1"
               style={
                 {
@@ -108,18 +108,18 @@ export function SleepButton() {
               : "border-line bg-elevated text-muted hover:border-accent/40 hover:text-text"
           }`}
         >
-          {playing ? <RainIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
-          <span className="text-sm font-semibold">{playing ? "Stop" : "Sleep"}</span>
+          <RainIcon className="h-4 w-4" />
+          <span className="text-sm font-semibold">{playing ? "Stop" : "Rain"}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          aria-label="Choose a sleep sound"
+          aria-label="Choose a rain sound"
           aria-expanded={open}
           className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-elevated text-muted shadow-lg transition hover:border-accent/40 hover:text-text"
         >
-          <MoonIcon className="h-4 w-4" />
+          <RainIcon className="h-4 w-4" />
         </button>
       </div>
     </div>

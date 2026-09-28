@@ -7,6 +7,14 @@ export type SleepPreset = {
   /** Centre frequency of the band-passed "hiss" layer, in Hz. */
   bandFreq: number;
   bandQ: number;
+  /**
+   * Low-pass cut-off on the top layer, in Hz. This is the knob that decides how
+   * soft the rain is: white noise carries energy all the way to Nyquist, and
+   * everything above roughly 5 kHz is what the ear reads as hiss and spit.
+   */
+  airFreq: number;
+  /** High-shelf cut applied above the presence band, in dB. Negative is gentler. */
+  edgeGain: number;
   /** Cut-off of the low-passed "body" layer, in Hz. */
   bodyFreq: number;
   gain: number;
@@ -25,75 +33,100 @@ export const SLEEP_PRESETS: SleepPreset[] = [
     id: "drizzle",
     label: "Drizzle",
     description: "Light and airy",
-    bandFreq: 2600,
-    bandQ: 0.7,
-    bodyFreq: 420,
-    gain: 0.4,
+    bandFreq: 2200,
+    bandQ: 0.5,
+    airFreq: 5200,
+    edgeGain: -3,
+    bodyFreq: 380,
+    gain: 0.3,
     lfoRate: 0.35,
-    lfoDepth: 0.35,
+    lfoDepth: 0.15,
     thunder: false,
   },
   {
     id: "rain",
     label: "Steady rain",
     description: "The everyday one",
-    bandFreq: 1800,
-    bandQ: 0.8,
-    bodyFreq: 300,
-    gain: 0.6,
+    bandFreq: 1500,
+    bandQ: 0.6,
+    airFreq: 4200,
+    edgeGain: -6,
+    bodyFreq: 260,
+    gain: 0.4,
     lfoRate: 0.25,
-    lfoDepth: 0.3,
+    lfoDepth: 0.15,
     thunder: false,
   },
   {
     id: "downpour",
     label: "Downpour",
     description: "Heavy and constant",
-    bandFreq: 1300,
-    bandQ: 0.9,
-    bodyFreq: 190,
-    gain: 0.78,
+    bandFreq: 1150,
+    bandQ: 0.7,
+    airFreq: 3400,
+    edgeGain: -8,
+    bodyFreq: 180,
+    gain: 0.5,
     lfoRate: 0.18,
-    lfoDepth: 0.25,
+    lfoDepth: 0.14,
     thunder: false,
   },
   {
     id: "storm",
     label: "Thunderstorm",
     description: "Rain with distant thunder",
-    bandFreq: 1100,
-    bandQ: 1,
+    bandFreq: 950,
+    bandQ: 0.8,
+    airFreq: 2900,
+    edgeGain: -9,
     bodyFreq: 140,
-    gain: 0.88,
+    gain: 0.58,
     lfoRate: 0.15,
-    lfoDepth: 0.22,
+    lfoDepth: 0.12,
     thunder: true,
   },
 ];
 
 export const DEFAULT_PRESET_ID: SleepSoundId = "rain";
-export const DEFAULT_SLEEP_VOLUME = 0.5;
+export const DEFAULT_SLEEP_VOLUME = 0.38;
 
 export function getPreset(id: string | null | undefined): SleepPreset {
   return SLEEP_PRESETS.find((preset) => preset.id === id) ?? SLEEP_PRESETS[1];
 }
 
+/**
+ * Builds a noise buffer whose loop point is seamless.
+ *
+ * The last half-second is folded back over the first half-second, so when the
+ * source loops there is no step change between the end of the buffer and the
+ * start. Without this you get a faint tick every few seconds, which is exactly
+ * the kind of thing that makes background noise grating rather than soothing.
+ */
 function noiseBuffer(context: AudioContext, seconds: number, brown = false) {
-  const length = Math.floor(context.sampleRate * seconds);
-  const buffer = context.createBuffer(1, length, context.sampleRate);
+  const sampleRate = context.sampleRate;
+  const length = Math.floor(sampleRate * seconds);
+  const fade = Math.floor(sampleRate * 0.5);
+  const buffer = context.createBuffer(1, length, sampleRate);
   const data = buffer.getChannelData(0);
+  const scratch = new Float32Array(length + fade);
 
   if (brown) {
     let last = 0;
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < scratch.length; i++) {
       const white = Math.random() * 2 - 1;
       last = (last + 0.02 * white) / 1.02;
-      data[i] = last * 3.5;
+      scratch[i] = last * 3.5;
     }
   } else {
-    for (let i = 0; i < length; i++) {
-      data[i] = Math.random() * 2 - 1;
+    for (let i = 0; i < scratch.length; i++) {
+      scratch[i] = Math.random() * 2 - 1;
     }
+  }
+
+  data.set(scratch.subarray(0, length));
+  for (let i = 0; i < fade; i++) {
+    const t = i / fade;
+    data[i] = data[i] * t + scratch[length + i] * (1 - t);
   }
 
   return buffer;
@@ -114,6 +147,12 @@ const FADE_SECONDS = 1.2;
  * Two noise layers make rain: a band-passed top for the hiss of drops on a
  * window, and a low-passed layer for the weight behind it. A slow LFO on the
  * top layer stops it sounding like flat static.
+ *
+ * The top layer is then low-passed and high-shelved. Raw white noise through a
+ * band-pass alone is far too bright for something meant to be slept to, so the
+ * air filter rolls off the top end and the shelf takes a little more off the
+ * presence band. The body layer runs on brown noise, which has no high end to
+ * begin with and therefore sits underneath rather than hissing.
  */
 export function createSleepEngine(
   context: AudioContext,
@@ -131,20 +170,31 @@ export function createSleepEngine(
 
   const band = context.createBiquadFilter();
   band.type = "bandpass";
-  band.connect(rainGain);
+
+  const air = context.createBiquadFilter();
+  air.type = "lowpass";
+  air.Q.value = Math.SQRT1_2;
+
+  const edge = context.createBiquadFilter();
+  edge.type = "highshelf";
+  edge.frequency.value = 5000;
+
+  band.connect(air);
+  air.connect(edge);
+  edge.connect(rainGain);
 
   const body = context.createBiquadFilter();
   body.type = "lowpass";
   body.connect(bodyGain);
 
-  const noise = noiseBuffer(context, 4);
+  const noise = noiseBuffer(context, 6);
   const top = context.createBufferSource();
   top.buffer = noise;
   top.loop = true;
   top.connect(band);
 
   const low = context.createBufferSource();
-  low.buffer = noise;
+  low.buffer = noiseBuffer(context, 6, true);
   low.loop = true;
   low.connect(body);
 
@@ -165,9 +215,11 @@ export function createSleepEngine(
     const now = context.currentTime;
     band.frequency.value = preset.bandFreq;
     band.Q.value = preset.bandQ;
+    air.frequency.value = preset.airFreq;
+    edge.gain.value = preset.edgeGain;
     body.frequency.value = preset.bodyFreq;
     rainGain.gain.value = preset.gain;
-    bodyGain.gain.value = preset.gain * 0.7;
+    bodyGain.gain.value = preset.gain * 0.5;
     lfo.frequency.value = preset.lfoRate;
     lfoDepth.gain.value = preset.gain * preset.lfoDepth;
     master.gain.cancelScheduledValues(now);
@@ -187,7 +239,7 @@ export function createSleepEngine(
 
     const envelope = context.createGain();
     const now = context.currentTime;
-    const peak = 0.5 + Math.random() * 0.35;
+    const peak = 0.4 + Math.random() * 0.3;
     const attack = 0.4 + Math.random() * 0.9;
     const decay = 2.5 + Math.random() * 2.5;
 
@@ -274,7 +326,7 @@ export function createSleepEngine(
         // Sources that never started throw; nothing to do.
       }
 
-      [top, low, lfo, band, body, rainGain, bodyGain, lfoDepth, master].forEach((node) =>
+      [top, low, lfo, band, air, edge, body, rainGain, bodyGain, lfoDepth, master].forEach((node) =>
         node.disconnect(),
       );
     },
