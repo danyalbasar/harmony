@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMusic } from "@/context/music-context";
 import { usePlayer } from "@/context/player-context";
 import { useToast } from "@/context/toast-context";
-import { MoreIcon, PlusIcon, TrashIcon } from "@/components/icons";
+import { MoreIcon, PlayIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { CoverArt } from "@/components/cover-art";
 import { formatTime, type TrackWithUrls } from "@/lib/tracks";
 
@@ -83,12 +83,7 @@ export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps)
             <span className="text-sm tabular-nums group-hover:hidden">
               {index === undefined ? "•" : index + 1}
             </span>
-            <svg viewBox="0 0 24 24" className="hidden h-3.5 w-3.5 group-hover:block" aria-hidden="true">
-              <path
-                d="M8 5.14v13.72c0 .8.87 1.29 1.55.87l11.2-6.86a1.03 1.03 0 0 0 0-1.74L9.55 4.27A1.03 1.03 0 0 0 8 5.14Z"
-                fill="currentColor"
-              />
-            </svg>
+            <PlayIcon className="hidden h-3.5 w-3.5 group-hover:block" />
           </>
         )}
       </button>
