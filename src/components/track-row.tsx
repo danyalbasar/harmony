@@ -23,7 +23,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
   const { current, isPlaying, play, addToQueue, setNowPlayingOpen } = usePlayer();
   // Playlists are paused: only removeTrack is still used from here.
   // const { user, playlists, addToPlaylist, removeFromPlaylist, removeTrack } = useMusic();
-  const { user, removeTrack } = useMusic();
+  const { user, removeTrack, tracks } = useMusic();
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -53,6 +53,14 @@ export function TrackRow({ track, index }: TrackRowProps) {
     };
   }, [menuOpen]);
 
+  // A row is one song inside the library, so the library itself is the queue.
+  // Handing the player a single-track array left previous/next with nowhere
+  // to go, which is why they appeared to do nothing.
+  const playFromLibrary = () => {
+    const position = tracks.findIndex((item) => item.id === track.id);
+    play(position >= 0 ? tracks : [track], Math.max(position, 0));
+  };
+
   const handleDelete = async () => {
     if (!window.confirm(`Delete "${track.title}"? The audio file goes too.`)) return;
 
@@ -75,7 +83,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
     >
       <button
         type="button"
-        onClick={() => play([track], 0)}
+        onClick={playFromLibrary}
         className="flex h-4 w-4 items-center justify-center text-muted transition hover:text-text"
         aria-label={`Play ${track.title}`}
       >
@@ -101,7 +109,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
         <button
           type="button"
           onClick={() => {
-            play([track], 0);
+            playFromLibrary();
             setNowPlayingOpen(true);
           }}
           className="flex min-w-0 flex-1 items-center gap-3 rounded text-left transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

@@ -45,12 +45,15 @@ function Home() {
       <QuickGrid
         items={[
           ...(recent.length > 0
-            ? recent.slice(0, 4).map((track) => ({
+            ? recent.slice(0, 4).map((track, position) => ({
                 key: track.id,
                 title: track.title,
                 subtitle: track.artist,
                 coverUrl: track.coverUrl,
-                tracks: [track],
+                // The whole recent list, not just this card, so previous and
+                // next have somewhere to go.
+                tracks: recent,
+                startIndex: position,
               }))
             : []),
           // Playlists are paused.
@@ -118,6 +121,7 @@ type QuickItem = {
   subtitle: string;
   coverUrl: string | null;
   tracks: TrackWithUrls[];
+  startIndex?: number;
   href?: string;
 };
 
@@ -161,7 +165,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
             ) : (
               <button
                 type="button"
-                onClick={() => play(item.tracks, 0)}
+                onClick={() => play(item.tracks, item.startIndex ?? 0)}
                 className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black opacity-0 shadow-lg transition group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={`Play ${item.title}`}
               >
