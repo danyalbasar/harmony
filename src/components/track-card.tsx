@@ -2,7 +2,7 @@
 
 import { usePlayer } from "@/context/player-context";
 import { CoverArt } from "@/components/cover-art";
-import { EqualizerIcon, PlayIcon } from "@/components/icons";
+import { PauseIcon, PlayIcon } from "@/components/icons";
 import type { TrackWithUrls } from "@/lib/tracks";
 
 type TrackCardProps = {
@@ -54,7 +54,7 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
         aria-label={isCurrent && isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
       >
           {isCurrent && isPlaying ? (
-            <EqualizerIcon className="text-black" />
+            <PauseIcon className="h-5 w-5" />
           ) : (
             <PlayIcon className="h-5 w-5 translate-x-[1px]" />
           )}

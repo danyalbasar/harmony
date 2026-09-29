@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { usePlayer } from "@/context/player-context";
 import { CoverArt } from "@/components/cover-art";
 import {
-  LibraryIcon,
+  EqualizerIcon,
   MutedIcon,
   NextIcon,
   PauseIcon,
@@ -74,14 +73,12 @@ export function PlayerBar() {
             </p>
           </div>
 
-          {current ? (
-            <Link
-              href="/library"
-              className="hidden shrink-0 rounded-full p-2 text-muted transition hover:text-text sm:block"
-              aria-label="Open your library"
-            >
-              <LibraryIcon className={`h-4 w-4 ${isPlaying ? "" : "text-dim opacity-50"}`} />
-            </Link>
+          {/* The equalizer lives here as the now playing marker, next to the
+              song it belongs to. Song cards keep their plain play button. */}
+          {current && isPlaying ? (
+            <span className="hidden shrink-0 p-2 text-accent-soft sm:block" title="Now playing">
+              <EqualizerIcon className="h-4 w-4" />
+            </span>
           ) : null}
         </div>
 

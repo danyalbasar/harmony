@@ -6,7 +6,7 @@ import { usePlayer } from "@/context/player-context";
 import { SignOutButton } from "@/components/sign-out-button";
 import { TrackCard } from "@/components/track-card";
 import { TrackRow } from "@/components/track-row";
-import { EqualizerIcon, PlayIcon } from "@/components/icons";
+import { PlayIcon } from "@/components/icons";
 import type { TrackWithUrls } from "@/lib/tracks";
 
 export default function HomePage() {
@@ -122,7 +122,7 @@ type QuickItem = {
 };
 
 function QuickGrid({ items }: { items: QuickItem[] }) {
-  const { play, current, isPlaying } = usePlayer();
+  const { play } = usePlayer();
 
   if (items.length === 0) return null;
 
@@ -130,7 +130,6 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => {
         const cover = item.coverUrl;
-        const active = item.tracks.length > 0 && current?.id === item.tracks[0]?.id;
 
         return (
           <div
@@ -166,11 +165,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
                 className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black opacity-0 shadow-lg transition group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={`Play ${item.title}`}
               >
-                {active && isPlaying ? (
-                  <EqualizerIcon className="text-black" />
-                ) : (
-                  <PlayIcon className="h-4 w-4 translate-x-[1px]" />
-                )}
+                <PlayIcon className="h-4 w-4 translate-x-[1px]" />
               </button>
             )}
           </div>
