@@ -40,8 +40,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex flex-1">
           <Sidebar />
           <main className="min-w-0 flex-1 pb-8 pl-0 md:pl-60">
-            {/* pt-14 clears the fixed mobile nav, which is hidden from md up. */}
-            <div className="mx-auto w-full max-w-[1600px] px-4 pt-14 sm:px-6 md:pt-6">
+            {/* The fixed mobile nav is about 37px tall, so this is the space
+                below it. pt-20 keeps page headings clear of it, and drops back
+                to pt-6 from md up where the nav is hidden. */}
+            <div className="mx-auto w-full max-w-[1600px] px-4 pt-20 sm:px-6 md:pt-6">
               <MobileNav />
               {children}
             </div>
