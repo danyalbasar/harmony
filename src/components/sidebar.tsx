@@ -7,10 +7,10 @@ import { useMusic } from "@/context/music-context";
 import { usePlayer } from "@/context/player-context";
 import { useToast } from "@/context/toast-context";
 import {
-  EqualizerIcon,
   HomeIcon,
   LibraryIcon,
   MusicIcon,
+  PlayIcon,
   PlusIcon,
   SearchIcon,
 } from "@/components/icons";
@@ -135,7 +135,7 @@ export function Sidebar() {
                         className="rounded-full p-1.5 text-muted transition hover:text-text"
                         aria-label={`Play ${playlist.name}`}
                       >
-                        <EqualizerIcon className="h-3 w-3" />
+                        <PlayIcon className="h-3 w-3" />
                       </button>
                     ) : null}
                   </div>

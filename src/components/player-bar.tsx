@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePlayer } from "@/context/player-context";
 import { CoverArt } from "@/components/cover-art";
 import {
-  EqualizerIcon,
+  LibraryIcon,
   MutedIcon,
   NextIcon,
   PauseIcon,
@@ -80,7 +80,7 @@ export function PlayerBar() {
               className="hidden shrink-0 rounded-full p-2 text-muted transition hover:text-text sm:block"
               aria-label="Open your library"
             >
-              <EqualizerIcon className={`h-4 w-4 ${isPlaying ? "" : "text-dim opacity-50"}`} />
+              <LibraryIcon className={`h-4 w-4 ${isPlaying ? "" : "text-dim opacity-50"}`} />
             </Link>
           ) : null}
         </div>

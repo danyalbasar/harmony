@@ -128,4 +128,16 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   .equalizer-bar {
     animation: none;
   }
+
+  /* Stopping the animation used to leave both bars at full height, which is
+     just a pause glyph, not a level meter. Stagger the heights instead so it
+     still reads as something playing even though it does not move. Windows
+     "animations off" turns this on for laptops but not phones. */
+  .equalizer-bar:nth-child(1) {
+    height: 55%;
+  }
+
+  .equalizer-bar:nth-child(2) {
+    height: 100%;
+  }
 }

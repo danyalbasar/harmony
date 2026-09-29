@@ -8,7 +8,6 @@ import { LockKey } from "@phosphor-icons/react/dist/csr/LockKey";
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 import { Moon } from "@phosphor-icons/react/dist/csr/Moon";
 import { MusicNotes } from "@phosphor-icons/react/dist/csr/MusicNotes";
-import { Pause } from "@phosphor-icons/react/dist/csr/Pause";
 import { Play } from "@phosphor-icons/react/dist/csr/Play";
 import { Plus } from "@phosphor-icons/react/dist/csr/Plus";
 import { Queue } from "@phosphor-icons/react/dist/csr/Queue";
@@ -54,7 +53,6 @@ function icon(Component: PhosphorIcon, weight: Weight) {
 }
 
 export const PlayIcon = icon(Play, "fill");
-export const PauseIcon = icon(Pause, "fill");
 export const NextIcon = icon(SkipForward, "fill");
 export const PreviousIcon = icon(SkipBack, "fill");
 export const VolumeIcon = icon(SpeakerHigh, "fill");
@@ -81,6 +79,31 @@ export const MoonIcon = icon(Moon, "fill");
 export const RainIcon = icon(CloudRain, "fill");
 export const LockIcon = icon(LockKey, "fill");
 export const KeyIcon = icon(Key, "fill");
+
+/**
+ * Not a Phosphor icon, same as the equalizer below.
+ *
+ * Phosphor's pause is 72px bars around a 32px gap, so the gap is nearly half a
+ * bar wide and the whole glyph only fills 69% of the box horizontally against
+ * 75% vertically. In a 16px transport button that reads as two small strokes
+ * marooned in the middle. This keeps Phosphor's 20px corner radius but widens
+ * the bars to 80, drops the gap to 24, and grows the glyph to fill the box
+ * evenly, which is closer to how a transport control should look.
+ */
+export function PauseIcon({ className, ...props }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 256 256"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      <path d="M56,24H96a20,20,0,0,1,20,20V212a20,20,0,0,1-20,20H56a20,20,0,0,1-20-20V44A20,20,0,0,1,56,24Zm104,0h40a20,20,0,0,1,20,20V212a20,20,0,0,1-20,20h-40a20,20,0,0,1-20-20V44A20,20,0,0,1,160,24Z" />
+    </svg>
+  );
+}
 
 /**
  * Not a Phosphor icon. Two bars, because that is what a two-bar pause looks
