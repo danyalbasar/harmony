@@ -2,43 +2,47 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { useMusic } from "@/context/music-context";
-import { usePlayer } from "@/context/player-context";
-import { useToast } from "@/context/toast-context";
+// Playlists are paused: the state, toasts and player calls below were only used
+// by the playlists panel, which is commented out further down.
+// import { useState } from "react";
+// Playlists are paused: the only user of useMusic was the playlists panel.
+// import { useMusic } from "@/context/music-context";
+// import { usePlayer } from "@/context/player-context";
+// import { useToast } from "@/context/toast-context";
 import {
   HomeIcon,
   LibraryIcon,
   MusicIcon,
-  PlayIcon,
-  PlusIcon,
   SearchIcon,
+  // PlayIcon,
+  // PlusIcon,
 } from "@/components/icons";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, playlists, createPlaylist } = useMusic();
-  const { play } = usePlayer();
-  const toast = useToast();
-  const [creating, setCreating] = useState(false);
-  const [name, setName] = useState("");
-
-  const handleCreate = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setCreating(false);
-      return;
-    }
-
-    try {
-      await createPlaylist(trimmed);
-      setName("");
-      setCreating(false);
-      toast(`Created ${trimmed}`);
-    } catch (error) {
-      toast(error instanceof Error ? error.message : "Could not create that playlist", "error");
-    }
-  };
+  // Playlists are paused.
+  // const { user, playlists, createPlaylist } = useMusic();
+  // const { play } = usePlayer();
+  // const toast = useToast();
+  // const [creating, setCreating] = useState(false);
+  // const [name, setName] = useState("");
+  //
+  // const handleCreate = async () => {
+  //   const trimmed = name.trim();
+  //   if (!trimmed) {
+  //     setCreating(false);
+  //     return;
+  //   }
+  //
+  //   try {
+  //     await createPlaylist(trimmed);
+  //     setName("");
+  //     setCreating(false);
+  //     toast(`Created ${trimmed}`);
+  //   } catch (error) {
+  //     toast(error instanceof Error ? error.message : "Could not create that playlist", "error");
+  //   }
+  // };
 
   return (
     <nav className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col gap-2 border-r border-line bg-elevated p-3 md:flex">
@@ -68,6 +72,8 @@ export function Sidebar() {
         />
       </ul>
 
+      {/* Playlists are paused: this whole panel is the sidebar's playlist list,
+      create button and inline create form. It comes back untouched.
       <div className="mt-4 flex min-h-0 flex-1 flex-col">
         <div className="flex items-center justify-between px-3 pb-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -145,6 +151,7 @@ export function Sidebar() {
           )}
         </ul>
       </div>
+      */}
     </nav>
   );
 }

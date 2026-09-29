@@ -12,7 +12,8 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "Harmony",
-  description: "Stream songs and build playlists.",
+  // Playlists are paused, so the tagline no longer promises them.
+  description: "Stream your songs.",
 };
 
 export const viewport: Viewport = {

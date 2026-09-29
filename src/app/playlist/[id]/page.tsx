@@ -1,3 +1,14 @@
+/**
+ * Playlists are paused. This file is disabled but kept intact so it can be
+ * switched back on without rewriting it.
+ *
+ * Nothing links here any more; the route stays so old bookmarks land on an explanation instead of a 404.
+ *
+ * To restore: delete the stub below, then unwrap the block.
+ */
+
+/*
+ * BEGIN COMMENTED-OUT PLAYLIST CODE - do not edit inside the block
 "use client";
 
 import { use, useState } from "react";
@@ -184,6 +195,27 @@ function Playlist({ id }: { id: string }) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+ */
+
+import Link from "next/link";
+
+export default function PlaylistPage() {
+  return (
+    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center">
+      <h1 className="text-2xl font-bold">Playlists are paused</h1>
+      <p className="max-w-md text-sm text-muted">
+        This part of the app is switched off for now. Your songs are untouched.
+      </p>
+      <Link
+        href="/library"
+        className="rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover"
+      >
+        Back to your library
+      </Link>
     </div>
   );
 }

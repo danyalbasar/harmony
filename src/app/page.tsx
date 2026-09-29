@@ -14,7 +14,7 @@ export default function HomePage() {
 }
 
 function Home() {
-  const { tracks, playlists, libraryLoading, libraryError, refreshLibrary } = useMusic();
+  const { tracks, libraryLoading, libraryError, refreshLibrary } = useMusic();
 
   const recent = tracks.slice(0, 12);
   const liked = tracks.filter((track) => track.album).slice(0, 8);
@@ -53,14 +53,15 @@ function Home() {
                 tracks: [track],
               }))
             : []),
-          ...playlists.slice(0, 2).map((playlist) => ({
-            key: playlist.id,
-            title: playlist.name,
-            subtitle: `Playlist · ${playlist.tracks.length} songs`,
-            coverUrl: playlist.tracks[0]?.coverUrl ?? null,
-            tracks: playlist.tracks,
-            href: `/playlist/${playlist.id}`,
-          })),
+          // Playlists are paused.
+          // ...playlists.slice(0, 2).map((playlist) => ({
+          //   key: playlist.id,
+          //   title: playlist.name,
+          //   subtitle: `Playlist · ${playlist.tracks.length} songs`,
+          //   coverUrl: playlist.tracks[0]?.coverUrl ?? null,
+          //   tracks: playlist.tracks,
+          //   href: `/playlist/${playlist.id}`,
+          // })),
         ]}
       />
 

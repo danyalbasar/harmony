@@ -1,3 +1,14 @@
+/**
+ * Playlists are paused. This file is disabled but kept intact so it can be
+ * switched back on without rewriting it.
+ *
+ * Reads were public and writes needed a session. Both are off; the tables stay in the database.
+ *
+ * To restore: delete the stub below, then unwrap the block.
+ */
+
+/*
+ * BEGIN COMMENTED-OUT PLAYLIST CODE - do not edit inside the block
 import { NextResponse } from "next/server";
 import { handleError, publicClient, requireSession } from "@/lib/api";
 import { toPlaylist, toTrack, withUrls, type PlaylistRow, type TrackRow } from "@/lib/tracks";
@@ -7,8 +18,7 @@ type PlaylistWithTracks = ReturnType<typeof toPlaylist> & { tracks: ReturnType<t
 /**
  * Public. Playlists belong to the site rather than to a visitor, so anyone can
  * read them. Creating and editing them still needs a session, handled below.
- */
-export async function GET() {
+ // (was the JSDoc close marker, folded so the wrapper holds)export async function GET() {
   try {
     const supabase = await publicClient();
 
@@ -85,3 +95,15 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+
+ */
+
+import { NextResponse } from "next/server";
+
+/** Playlists are paused, so this endpoint is intentionally inert. */
+const disabled = () =>
+  NextResponse.json({ error: "Playlists are paused" }, { status: 404 });
+
+export const GET = disabled;
+
+export const POST = disabled;

@@ -1,6 +1,8 @@
-import type { Playlist, TrackWithUrls } from "@/lib/tracks";
+import type { TrackWithUrls } from "@/lib/tracks";
 
-export type PlaylistWithTracks = Playlist & { tracks: TrackWithUrls[] };
+// Playlists are paused. Kept so the client calls can be restored as they were.
+// import type { Playlist } from "@/lib/tracks";
+// export type PlaylistWithTracks = Playlist & { tracks: TrackWithUrls[] };
 
 export class ApiError extends Error {
   status: number;
@@ -116,19 +118,24 @@ export const updateTrack = (id: string, form: FormData) =>
 
 export const deleteTrack = (id: string) => api<{ ok: true }>(`/api/tracks/${id}`, { method: "DELETE" });
 
-export const getPlaylists = () => api<{ playlists: PlaylistWithTracks[] }>("/api/playlists");
-
-export const createPlaylist = (body: { name: string; description?: string }) =>
-  api<{ playlist: PlaylistWithTracks }>("/api/playlists", { method: "POST", body });
-
-export const renamePlaylist = (id: string, body: { name?: string; description?: string }) =>
-  api<{ playlist: Playlist }>(`/api/playlists/${id}`, { method: "PATCH", body });
-
-export const deletePlaylist = (id: string) =>
-  api<{ ok: true }>(`/api/playlists/${id}`, { method: "DELETE" });
-
-export const addTrackToPlaylist = (playlistId: string, trackId: string) =>
-  api<{ ok: true }>(`/api/playlists/${playlistId}/tracks`, { method: "POST", body: { trackId } });
-
-export const removeTrackFromPlaylist = (playlistId: string, trackId: string) =>
-  api<{ ok: true }>(`/api/playlists/${playlistId}/tracks?trackId=${trackId}`, { method: "DELETE" });
+/*
+ * Playlists are paused. The API routes behind these return 404 until the
+ * feature is switched back on, so the calls are kept here but not used.
+ *
+ * export const getPlaylists = () => api<{ playlists: PlaylistWithTracks[] }>("/api/playlists");
+ *
+ * export const createPlaylist = (body: { name: string; description?: string }) =>
+ *   api<{ playlist: PlaylistWithTracks }>("/api/playlists", { method: "POST", body });
+ *
+ * export const renamePlaylist = (id: string, body: { name?: string; description?: string }) =>
+ *   api<{ playlist: Playlist }>(`/api/playlists/${id}`, { method: "PATCH", body });
+ *
+ * export const deletePlaylist = (id: string) =>
+ *   api<{ ok: true }>(`/api/playlists/${id}`, { method: "DELETE" });
+ *
+ * export const addTrackToPlaylist = (playlistId: string, trackId: string) =>
+ *   api<{ ok: true }>(`/api/playlists/${playlistId}/tracks`, { method: "POST", body: { trackId } });
+ *
+ * export const removeTrackFromPlaylist = (playlistId: string, trackId: string) =>
+ *   api<{ ok: true }>(`/api/playlists/${playlistId}/tracks?trackId=${trackId}`, { method: "DELETE" });
+ */

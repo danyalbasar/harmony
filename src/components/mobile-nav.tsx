@@ -29,6 +29,8 @@ export function MobileNav() {
         href="/library"
         aria-label="Your library"
         className={`rounded-full p-2.5 ${
+          // Left in place on purpose: the paused /playlist route still exists and
+          // links back here, so the Library tab stays lit on that page.
           pathname === "/library" || pathname.startsWith("/playlist") ? "text-text" : "text-muted"
         }`}
       >

@@ -1,3 +1,14 @@
+/**
+ * Playlists are paused. This file is disabled but kept intact so it can be
+ * switched back on without rewriting it.
+ *
+ * Add and remove a song in a playlist. Off.
+ *
+ * To restore: delete the stub below, then unwrap the block.
+ */
+
+/*
+ * BEGIN COMMENTED-OUT PLAYLIST CODE - do not edit inside the block
 import { NextResponse } from "next/server";
 import { handleError, requireSession } from "@/lib/api";
 
@@ -64,3 +75,15 @@ export async function DELETE(request: Request, { params }: Context) {
     return handleError(error);
   }
 }
+
+ */
+
+import { NextResponse } from "next/server";
+
+/** Playlists are paused, so this endpoint is intentionally inert. */
+const disabled = () =>
+  NextResponse.json({ error: "Playlists are paused" }, { status: 404 });
+
+export const POST = disabled;
+
+export const DELETE = disabled;

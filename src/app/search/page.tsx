@@ -11,7 +11,7 @@ export default function SearchPage() {
 }
 
 function Search() {
-  const { tracks, playlists, libraryLoading } = useMusic();
+  const { tracks, libraryLoading } = useMusic();
   const { play } = usePlayer();
   const [query, setQuery] = useState("");
 
@@ -30,15 +30,16 @@ function Search() {
     [tracks, normalized],
   );
 
-  const matchingPlaylists = useMemo(
-    () =>
-      normalized
-        ? playlists.filter((playlist) =>
-            [playlist.name, playlist.description ?? ""].join(" ").toLowerCase().includes(normalized),
-          )
-        : playlists,
-    [playlists, normalized],
-  );
+  // Playlists are paused, so search covers songs only.
+  // const matchingPlaylists = useMemo(
+  //   () =>
+  //     normalized
+  //       ? playlists.filter((playlist) =>
+  //           [playlist.name, playlist.description ?? ""].join(" ").toLowerCase().includes(normalized),
+  //         )
+  //       : playlists,
+  //   [playlists, normalized],
+  // );
 
   return (
     <div className="flex flex-col gap-8 pb-10">
@@ -82,6 +83,7 @@ function Search() {
         </section>
       ) : null}
 
+      {/* Playlists are paused.
       {matchingPlaylists.length > 0 ? (
         <section>
           <h2 className="mb-3 text-lg font-bold tracking-tight">Playlists</h2>
@@ -112,24 +114,26 @@ function Search() {
           </ul>
         </section>
       ) : null}
+      */}
 
       {libraryLoading ? (
         <p className="text-sm text-muted">Loading your library…</p>
-      ) : normalized && matchingTracks.length === 0 && matchingPlaylists.length === 0 ? (
+      ) : normalized && matchingTracks.length === 0 ? (
         <p className="text-sm text-muted">No results for “{query}”.</p>
       ) : null}
     </div>
   );
 }
 
-function formatDuration(durations: number[]) {
-  const total = durations.reduce((sum, value) => sum + value, 0);
+// Playlists are paused. Only the playlists results used this helper.
+// function formatDuration(durations: number[]) {
+//   const total = durations.reduce((sum, value) => sum + value, 0);
 
-  if (total === 0) return "0 min";
+//   if (total === 0) return "0 min";
 
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.round((total % 3600) / 60);
+//   const hours = Math.floor(total / 3600);
+//   const minutes = Math.round((total % 3600) / 60);
 
-  if (hours > 0) return `${hours} hr ${minutes} min`;
-  return `${Math.max(minutes, 1)} min`;
-}
+//   if (hours > 0) return `${hours} hr ${minutes} min`;
+//   return `${Math.max(minutes, 1)} min`;
+// }

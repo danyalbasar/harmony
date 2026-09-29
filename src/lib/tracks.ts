@@ -36,13 +36,14 @@ export type Track = {
   createdAt: string;
 };
 
-export type Playlist = {
-  id: string;
-  name: string;
-  description: string | null;
-  createdBy: string | null;
-  createdAt: string;
-};
+// Playlists are paused. The shape is kept here so it can be restored quickly.
+// export type Playlist = {
+//   id: string;
+//   name: string;
+//   description: string | null;
+//   createdBy: string | null;
+//   createdAt: string;
+// };
 
 export type TrackRow = {
   id: string;
@@ -59,13 +60,13 @@ export type TrackRow = {
   created_at: string;
 };
 
-export type PlaylistRow = {
-  id: string;
-  name: string;
-  description: string | null;
-  created_by: string | null;
-  created_at: string;
-};
+// export type PlaylistRow = {
+//   id: string;
+//   name: string;
+//   description: string | null;
+//   created_by: string | null;
+//   created_at: string;
+// };
 
 export function toTrack(row: TrackRow): Track {
   return {
@@ -84,15 +85,15 @@ export function toTrack(row: TrackRow): Track {
   };
 }
 
-export function toPlaylist(row: PlaylistRow): Playlist {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description,
-    createdBy: row.created_by,
-    createdAt: row.created_at,
-  };
-}
+// export function toPlaylist(row: PlaylistRow): Playlist {
+//   return {
+//     id: row.id,
+//     name: row.name,
+//     description: row.description,
+//     createdBy: row.created_by,
+//     createdAt: row.created_at,
+//   };
+// }
 
 export function storageUrl(bucket: string, path: string) {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;

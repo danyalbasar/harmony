@@ -5,15 +5,14 @@ import { usePlayer } from "@/context/player-context";
 import { SignOutButton } from "@/components/sign-out-button";
 import { TrackRow } from "@/components/track-row";
 import { PlayIcon } from "@/components/icons";
-import Link from "next/link";
-import { formatTime } from "@/lib/tracks";
-
+// Playlists are paused: the Link and formatTime imports were only used by the
+// playlists section, and that section is commented out below.
 export default function LibraryPage() {
   return <Library />;
 }
 
 function Library() {
-  const { tracks, playlists, libraryLoading } = useMusic();
+  const { tracks, libraryLoading } = useMusic();
   const { play, isPlaying, current } = usePlayer();
 
   const playingWholeLibrary = current?.id === tracks[0]?.id && isPlaying;
@@ -24,8 +23,7 @@ function Library() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Your Library</h1>
           <p className="mt-1 text-sm text-muted">
-            {tracks.length} {tracks.length === 1 ? "song" : "songs"} · {playlists.length}{" "}
-            {playlists.length === 1 ? "playlist" : "playlists"}
+            {tracks.length} {tracks.length === 1 ? "song" : "songs"}
           </p>
         </div>
         <SignOutButton />
@@ -55,6 +53,7 @@ function Library() {
         <p className="text-sm text-muted">No songs yet.</p>
       ) : null}
 
+      {/* Playlists are paused.
       {playlists.length > 0 ? (
         <section>
           <h2 className="mb-3 text-lg font-bold tracking-tight">Playlists</h2>
@@ -79,6 +78,7 @@ function Library() {
           </ul>
         </section>
       ) : null}
+      */}
     </div>
   );
 }

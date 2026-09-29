@@ -12,17 +12,19 @@ import {
 import type { Session, User } from "@supabase/supabase-js";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import {
-  getPlaylists,
   getTracks,
-  createPlaylist as createPlaylistRequest,
-  deletePlaylist as deletePlaylistRequest,
-  addTrackToPlaylist as addTrackRequest,
-  removeTrackFromPlaylist as removeTrackRequest,
   deleteTrack as deleteTrackRequest,
   createUploadTicket,
   putToSignedUrl,
   confirmUpload,
-  type PlaylistWithTracks,
+  // Playlists are paused; these are still used by the code further down, which
+  // is commented out in place.
+  // getPlaylists,
+  // createPlaylist as createPlaylistRequest,
+  // deletePlaylist as deletePlaylistRequest,
+  // addTrackToPlaylist as addTrackRequest,
+  // removeTrackFromPlaylist as removeTrackRequest,
+  // type PlaylistWithTracks,
 } from "@/lib/api-client";
 import type { TrackWithUrls } from "@/lib/tracks";
 
@@ -42,16 +44,17 @@ type MusicContextValue = {
   loading: boolean;
   signOut: () => Promise<void>;
   tracks: TrackWithUrls[];
-  playlists: PlaylistWithTracks[];
+  // Playlists are paused. See the commented-out block further down.
+  // playlists: PlaylistWithTracks[];
   libraryLoading: boolean;
   libraryError: string | null;
   refreshLibrary: () => Promise<void>;
   uploadSong: (upload: SongUpload) => Promise<TrackWithUrls>;
   removeTrack: (id: string) => Promise<void>;
-  createPlaylist: (name: string, description?: string) => Promise<void>;
-  removePlaylist: (id: string) => Promise<void>;
-  addToPlaylist: (playlistId: string, trackId: string) => Promise<void>;
-  removeFromPlaylist: (playlistId: string, trackId: string) => Promise<void>;
+  // createPlaylist: (name: string, description?: string) => Promise<void>;
+  // removePlaylist: (id: string) => Promise<void>;
+  // addToPlaylist: (playlistId: string, trackId: string) => Promise<void>;
+  // removeFromPlaylist: (playlistId: string, trackId: string) => Promise<void>;
 };
 
 const MusicContext = createContext<MusicContextValue | null>(null);
@@ -60,7 +63,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
   const [tracks, setTracks] = useState<TrackWithUrls[]>([]);
-  const [playlists, setPlaylists] = useState<PlaylistWithTracks[]>([]);
+  // Playlists are paused.
+  // const [playlists, setPlaylists] = useState<PlaylistWithTracks[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [libraryError, setLibraryError] = useState<string | null>(null);
 
@@ -69,9 +73,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     setLibraryError(null);
 
     try {
-      const [trackData, playlistData] = await Promise.all([getTracks(), getPlaylists()]);
+      // Playlists are paused, so only the catalogue is fetched.
+      const trackData = await getTracks();
       setTracks(trackData.tracks);
-      setPlaylists(playlistData.playlists);
     } catch (error) {
       setLibraryError(error instanceof Error ? error.message : "Could not load your library");
     } finally {
@@ -167,16 +171,18 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     async (id: string) => {
       await deleteTrackRequest(id);
       setTracks((current) => current.filter((track) => track.id !== id));
-      setPlaylists((current) =>
-        current.map((playlist) => ({
-          ...playlist,
-          tracks: playlist.tracks.filter((track) => track.id !== id),
-        })),
-      );
+      // Playlists are paused, so there are no cached playlist tracks to prune.
+      // setPlaylists((current) =>
+      //   current.map((playlist) => ({
+      //     ...playlist,
+      //     tracks: playlist.tracks.filter((track) => track.id !== id),
+      //   })),
+      // );
     },
     [],
   );
 
+  /*
   const createPlaylist = useCallback(async (name: string, description?: string) => {
     const { playlist } = await createPlaylistRequest({ name, description });
     setPlaylists((current) => [playlist, ...current]);
@@ -213,6 +219,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       ),
     );
   }, []);
+  */
 
   const value = useMemo<MusicContextValue>(
     () => ({
@@ -221,32 +228,33 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       loading,
       signOut,
       tracks,
-      playlists,
+      // Playlists are paused.
+      // playlists,
       libraryLoading,
       libraryError,
       refreshLibrary,
       uploadSong,
       removeTrack,
-      createPlaylist,
-      removePlaylist,
-      addToPlaylist,
-      removeFromPlaylist,
+      // createPlaylist,
+      // removePlaylist,
+      // addToPlaylist,
+      // removeFromPlaylist,
     }),
     [
       session,
       loading,
       signOut,
       tracks,
-      playlists,
+      // playlists,
       libraryLoading,
       libraryError,
       refreshLibrary,
       uploadSong,
       removeTrack,
-      createPlaylist,
-      removePlaylist,
-      addToPlaylist,
-      removeFromPlaylist,
+      // createPlaylist,
+      // removePlaylist,
+      // addToPlaylist,
+      // removeFromPlaylist,
     ],
   );
 

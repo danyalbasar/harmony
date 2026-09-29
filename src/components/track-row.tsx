@@ -4,20 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import { useMusic } from "@/context/music-context";
 import { usePlayer } from "@/context/player-context";
 import { useToast } from "@/context/toast-context";
-import { MoreIcon, PlayIcon, PlusIcon, TrashIcon } from "@/components/icons";
+// Playlists are paused: TrashIcon was only used by the remove-from-playlist button.
+// import { MoreIcon, PlayIcon } from "@/components/icons";
+import { MoreIcon, PlayIcon } from "@/components/icons";
 import { CoverArt } from "@/components/cover-art";
 import { formatTime, type TrackWithUrls } from "@/lib/tracks";
 
 type TrackRowProps = {
   track: TrackWithUrls;
   index?: number;
-  playlistId?: string;
-  onRemoved?: () => void;
+  // Playlists are paused. The playlist page is the only caller that passed
+  // these, and it is commented out, so they are unused for now.
+  // playlistId?: string;
+  // onRemoved?: () => void;
 };
 
-export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps) {
+export function TrackRow({ track, index }: TrackRowProps) {
   const { current, isPlaying, play, addToQueue, setNowPlayingOpen } = usePlayer();
-  const { user, playlists, addToPlaylist, removeFromPlaylist, removeTrack } = useMusic();
+  // Playlists are paused: only removeTrack is still used from here.
+  // const { user, playlists, addToPlaylist, removeFromPlaylist, removeTrack } = useMusic();
+  const { user, removeTrack } = useMusic();
   const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -125,6 +131,7 @@ export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps)
       </p>
 
       <div className="flex items-center justify-end gap-1">
+        {/* Playlists are paused: the remove-from-playlist button is not rendered.
         {playlistId && canEdit ? (
           <button
             type="button"
@@ -138,6 +145,7 @@ export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps)
             <TrashIcon className="h-4 w-4" />
           </button>
         ) : null}
+        */}
 
         <div className="relative" ref={menuRef}>
           <button
@@ -168,6 +176,7 @@ export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps)
                 }}
               />
 
+              {/* Playlists are paused: the "Add to playlist" submenu is gone.
               {canEdit ? (
                 playlists.length > 0 ? (
                   <>
@@ -200,6 +209,7 @@ export function TrackRow({ track, index, playlistId, onRemoved }: TrackRowProps)
                   />
                 )
               ) : null}
+              */}
 
               {canEdit ? (
                 <div className="mt-1 border-t border-line">
@@ -250,17 +260,19 @@ function MenuItem({
   );
 }
 
-export function NewPlaylistRow({ onCreate }: { onCreate: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onCreate}
-      className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm text-muted transition hover:bg-card hover:text-text"
-    >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-dashed border-dim text-muted">
-        <PlusIcon className="h-4 w-4" />
-      </span>
-      <span>New playlist</span>
-    </button>
-  );
-}
+// Playlists are paused. This row was only ever rendered at the top of the
+// playlists sidebar, so nothing references it while the feature is off.
+// export function NewPlaylistRow({ onCreate }: { onCreate: () => void }) {
+//   return (
+//     <button
+//       type="button"
+//       onClick={onCreate}
+//       className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm text-muted transition hover:bg-card hover:text-text"
+//     >
+//       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-dashed border-dim text-muted">
+//         <PlusIcon className="h-4 w-4" />
+//       </span>
+//       <span>New playlist</span>
+//     </button>
+//   );
+// }
