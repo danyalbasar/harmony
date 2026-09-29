@@ -124,20 +124,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   animation-delay: 150ms;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .equalizer-bar {
-    animation: none;
-  }
-
-  /* Stopping the animation used to leave both bars at full height, which is
-     just a pause glyph, not a level meter. Stagger the heights instead so it
-     still reads as something playing even though it does not move. Windows
-     "animations off" turns this on for laptops but not phones. */
-  .equalizer-bar:nth-child(1) {
-    height: 55%;
-  }
-
-  .equalizer-bar:nth-child(2) {
-    height: 100%;
-  }
-}
+/* The two equalizer bars are the "now playing" signal, and the request is
+   for them to move everywhere. They used to be frozen under
+   prefers-reduced-motion, which left them static on laptops with Windows
+   "Animation effects" off. The motion here is just two bars scaling in
+   place, so it is kept even when the OS asks for reduced motion. */
