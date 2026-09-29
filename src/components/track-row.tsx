@@ -83,6 +83,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
           <span className="flex h-3.5 w-3.5 items-end justify-between text-accent-soft" aria-hidden="true">
             <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
             <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
+            <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
           </span>
         ) : (
           <>

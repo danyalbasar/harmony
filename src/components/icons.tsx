@@ -83,12 +83,10 @@ export const KeyIcon = icon(Key, "fill");
 /**
  * Not a Phosphor icon, same as the equalizer below.
  *
- * Phosphor's pause is 72px bars around a 32px gap, so the gap is nearly half a
- * bar wide and the whole glyph only fills 69% of the box horizontally against
- * 75% vertically. In a 16px transport button that reads as two small strokes
- * marooned in the middle. This keeps Phosphor's 20px corner radius but widens
- * the bars to 80, drops the gap to 24, and grows the glyph to fill the box
- * evenly, which is closer to how a transport control should look.
+ * These bars were previously 80 wide around a 24 gap, which is too heavy: the
+ * bars were more than three times the gap, so at 16px they filled in as two
+ * solid blocks. They are 36 wide around a 40 gap now, so the gap is wider than
+ * a bar and the glyph stays legible when small.
  */
 export function PauseIcon({ className, ...props }: IconProps) {
   return (
@@ -100,14 +98,15 @@ export function PauseIcon({ className, ...props }: IconProps) {
       className={className}
       {...props}
     >
-      <path d="M56,24H96a20,20,0,0,1,20,20V212a20,20,0,0,1-20,20H56a20,20,0,0,1-20-20V44A20,20,0,0,1,56,24Zm104,0h40a20,20,0,0,1,20,20V212a20,20,0,0,1-20,20h-40a20,20,0,0,1-20-20V44A20,20,0,0,1,160,24Z" />
+      <path d="M80,40h20a8,8,0,0,1,8,8v160a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V48A8,8,0,0,1,80,40Zm76,0h20a8,8,0,0,1,8,8v160a8,8,0,0,1-8,8H156a8,8,0,0,1-8-8V48A8,8,0,0,1,156,40Z" />
     </svg>
   );
 }
 
 /**
- * Not a Phosphor icon. Two bars, because that is what a two-bar pause looks
- * like, animated to show the row is the thing currently playing.
+ * Not a Phosphor icon. Three bars, animated to show this is the thing
+ * currently playing. The delays are staggered in globals.css so they do not
+ * move in lockstep.
  */
 export function EqualizerIcon({ className }: { className?: string }) {
   return (
@@ -115,8 +114,9 @@ export function EqualizerIcon({ className }: { className?: string }) {
       className={`flex h-4 w-4 items-end justify-between ${className ?? ""}`}
       aria-hidden="true"
     >
-      <span className="equalizer-bar h-full w-[3px] rounded-sm bg-current" />
-      <span className="equalizer-bar h-full w-[3px] rounded-sm bg-current" />
+      <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
+      <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
+      <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
     </span>
   );
 }
