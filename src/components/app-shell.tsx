@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-accent" />
       </div>
     );
@@ -34,11 +34,14 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col pb-24">
+      {/* min-h-dvh rather than min-h-screen: on mobile vh measures the viewport
+          with the URL bar showing, so scrolling down leaves a gap. */}
+      <div className="flex min-h-dvh flex-col pb-24">
         <div className="flex flex-1">
           <Sidebar />
           <main className="min-w-0 flex-1 pb-8 pl-0 md:pl-60">
-            <div className="mx-auto w-full max-w-[1600px] px-4 pt-6 sm:px-6">
+            {/* pt-14 clears the fixed mobile nav, which is hidden from md up. */}
+            <div className="mx-auto w-full max-w-[1600px] px-4 pt-14 sm:px-6 md:pt-6">
               <MobileNav />
               {children}
             </div>

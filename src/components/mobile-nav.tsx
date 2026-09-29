@@ -8,7 +8,11 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-30 -mx-4 mb-6 flex items-center gap-1 overflow-x-auto border-b border-line bg-base/95 px-4 py-2 backdrop-blur md:hidden">
+    // fixed, not sticky: sticky positions itself against its containing block,
+    // so it shifted as the page height changed on scroll. fixed pins it to the
+    // viewport. The -mx-4 and mb-6 are gone because it is no longer in flow;
+    // the pt-14 on the content wrapper in app-shell reserves the space instead.
+    <nav className="fixed inset-x-0 top-0 z-30 flex items-center gap-1 overflow-x-auto border-b border-line bg-base/95 px-4 py-2 backdrop-blur md:hidden">
       <Link
         href="/"
         aria-label="Home"

@@ -51,7 +51,9 @@ body {
     radial-gradient(100% 100% at 90% 100%, #2a1230 0%, transparent 55%);
   background-attachment: fixed;
   background-repeat: no-repeat;
-  min-height: 100vh;
+  /* dvh, not vh. vh is the large viewport on mobile, so it does not follow the
+     URL bar collapsing on scroll and the page ends up shorter than the screen. */
+  min-height: 100dvh;
 }
 
 input[type="range"] {
