@@ -26,6 +26,7 @@ export type Track = {
   title: string;
   artist: string;
   album: string | null;
+  about: string | null;
   duration: number;
   audioPath: string;
   audioMime: string;
@@ -50,6 +51,7 @@ export type TrackRow = {
   title: string;
   artist: string;
   album: string | null;
+  about?: string | null;
   duration: number | string;
   audio_path: string;
   audio_mime: string;
@@ -74,6 +76,7 @@ export function toTrack(row: TrackRow): Track {
     title: row.title,
     artist: row.artist,
     album: row.album,
+    about: row.about?.trim() || null,
     duration: Number(row.duration) || 0,
     audioPath: row.audio_path,
     audioMime: row.audio_mime,

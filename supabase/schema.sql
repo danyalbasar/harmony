@@ -9,6 +9,7 @@ create table if not exists public.tracks (
   title        text        not null,
   artist       text        not null,
   album        text,
+  about        text,
   duration     numeric(8, 2) not null default 0,
   audio_path   text        not null,
   audio_mime   text        not null default 'audio/mpeg',

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePlayer } from "@/context/player-context";
 import { useModal } from "@/components/use-modal";
@@ -76,7 +76,7 @@ export function NowPlayingOverlay() {
         </button>
       </header>
 
-      <div className="relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div key={current.id} className="relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <div className="full-player-content">
           <div className="full-player-artwork">
             <CoverArt
@@ -97,8 +97,48 @@ export function NowPlayingOverlay() {
             <PlayerOptions />
           </div>
         </div>
+        {current.about ? <SongAbout about={current.about} /> : null}
       </div>
     </div>
+  );
+}
+
+function SongAbout({ about }: { about: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const [canExpand, setCanExpand] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const id = useId();
+
+  useEffect(() => {
+    const text = textRef.current;
+    if (!text || expanded) return;
+    const measure = () => setCanExpand(text.scrollHeight > text.clientHeight + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(text);
+    return () => observer.disconnect();
+  }, [about, expanded]);
+
+  return (
+    <section aria-labelledby={`${id}-heading`} className="full-player-details">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.08] p-5 shadow-xl shadow-black/10 sm:p-6">
+        <h3 id={`${id}-heading`} className="mb-4 text-xl font-bold tracking-tight">About the song</h3>
+        <p ref={textRef} id={`${id}-text`} className={`whitespace-pre-line break-words text-[15px] leading-relaxed text-white/80 ${expanded ? "" : "line-clamp-5"}`}>
+          {about}
+        </p>
+        {canExpand ? (
+          <button
+            type="button"
+            aria-expanded={expanded}
+            aria-controls={`${id}-text`}
+            onClick={() => setExpanded(!expanded)}
+            className="mt-3 flex min-h-11 items-center rounded-full border border-white/30 px-5 text-sm font-semibold transition-colors hover:bg-white/10"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        ) : null}
+      </div>
+    </section>
   );
 }
 

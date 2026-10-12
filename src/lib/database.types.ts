@@ -12,6 +12,7 @@ export type Database = {
           title: string;
           artist: string;
           album: string | null;
+          about: string | null;
           duration: number;
           audio_path: string;
           audio_mime: string;
@@ -26,6 +27,7 @@ export type Database = {
           title: string;
           artist: string;
           album?: string | null;
+          about?: string | null;
           duration?: number;
           audio_path: string;
           audio_mime?: string;
@@ -40,6 +42,7 @@ export type Database = {
           title?: string;
           artist?: string;
           album?: string | null;
+          about?: string | null;
           duration?: number;
           audio_path?: string;
           audio_mime?: string;
