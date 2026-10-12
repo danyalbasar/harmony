@@ -6,9 +6,8 @@ import { usePlayer } from "@/context/player-context";
 import { useModal } from "@/components/use-modal";
 import { CoverArt } from "@/components/cover-art";
 import {
-  ChevronDownIcon,
+  CloseIcon,
   LibraryIcon,
-  MoreIcon,
   MutedIcon,
   NextIcon,
   PauseIcon,
@@ -61,19 +60,19 @@ export function NowPlayingOverlay() {
         onTouchEnd={onTouchEnd}
         className="full-player-header relative z-20 flex shrink-0 items-center justify-between gap-3"
       >
+        <span aria-hidden="true" className="h-11 w-11 shrink-0" />
+        <div className="min-w-0 text-center">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/70">Playing from your library</p>
+          <p className="mt-1 truncate text-xs font-semibold">{current.album || "Your Library"}</p>
+        </div>
         <button
           type="button"
           onClick={() => setNowPlayingOpen(false)}
           aria-label="Close now playing"
           className="full-player-icon"
         >
-          <ChevronDownIcon className="h-6 w-6" />
+          <CloseIcon className="h-6 w-6" />
         </button>
-        <div className="min-w-0 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/70">Playing from your library</p>
-          <p className="mt-1 truncate text-xs font-semibold">{current.album || "Your Library"}</p>
-        </div>
-        <PlayerMenu />
       </header>
 
       <div className="relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -126,38 +125,6 @@ function useDismissablePanel() {
     };
   }, [open]);
   return { open, setOpen, ref };
-}
-
-function PlayerMenu() {
-  const { setQueueOpen, setNowPlayingOpen } = usePlayer();
-  const { open, setOpen, ref } = useDismissablePanel();
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        aria-label="Player options"
-        aria-expanded={open}
-        className="full-player-icon"
-      >
-        <MoreIcon className="h-6 w-6" />
-      </button>
-      {open ? (
-        <div role="group" aria-label="Player options" className="absolute right-0 top-12 w-52 rounded-xl border border-white/10 bg-[#24202b] p-1 shadow-2xl">
-          <button
-            type="button"
-            className="flex min-h-12 w-full items-center gap-3 rounded-lg px-3 text-sm hover:bg-white/10"
-            onClick={() => { setNowPlayingOpen(false); setQueueOpen(true); }}
-          >
-            <QueueIcon className="h-5 w-5" />Open queue
-          </button>
-          <Link href="/library" onClick={() => setNowPlayingOpen(false)} className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm hover:bg-white/10">
-            <LibraryIcon className="h-5 w-5" />Your Library
-          </Link>
-        </div>
-      ) : null}
-    </div>
-  );
 }
 
 function PlayerOptions() {
