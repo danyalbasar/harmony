@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { AudioPlayback } from "@/lib/audio-playback";
 import type { TrackWithUrls } from "@/lib/tracks";
 
 export type RepeatMode = "off" | "all" | "one";
@@ -31,6 +32,7 @@ type PlayerContextValue = {
   setNowPlayingOpen: (open: boolean) => void;
   play: (tracks: TrackWithUrls[], startIndex?: number) => void;
   playNow: (track: TrackWithUrls) => void;
+  prepare: (track: TrackWithUrls | undefined) => void;
   toggle: () => void;
   next: () => void;
   previous: () => void;
@@ -58,7 +60,7 @@ function shuffled(length: number) {
 }
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playbackRef = useRef<AudioPlayback | null>(null);
   const queueRef = useRef<TrackWithUrls[]>([]);
   const indexRef = useRef(-1);
   const shuffleRef = useRef(false);
@@ -88,41 +90,27 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setQueueIndex(next);
   }, []);
 
-  const load = useCallback(
-    (source: string | undefined, autoplay: boolean) => {
-      const audio = audioRef.current;
-      if (!audio || !source) return;
+  const prepare = useCallback((track: TrackWithUrls | undefined) => {
+    playbackRef.current?.prepare(track?.audioUrl);
+  }, []);
 
-      setCurrentTime(0);
-      audio.src = source;
-      audio.load();
-
-      if (autoplay) {
-        void audio.play().catch(() => setIsPlaying(false));
-      }
-    },
-    [],
-  );
+  const load = useCallback((source: string | undefined, autoplay: boolean) => {
+    const playback = playbackRef.current;
+    if (!playback || !source) return;
+    const sameSource = playback.audio.getAttribute("src") === source;
+    if (!sameSource) setIsPlaying(false);
+    playback.load(source, autoplay);
+    setCurrentTime(playback.audio.currentTime);
+    setDuration(Number.isFinite(playback.audio.duration) ? playback.audio.duration : 0);
+  }, []);
 
   useEffect(() => {
-    const audio = new Audio();
-    audio.preload = "metadata";
-    audioRef.current = audio;
-
-    const handlers = {
-      timeupdate: () => setCurrentTime(audio.currentTime),
-      durationchange: () =>
-        setDuration(Number.isFinite(audio.duration) ? audio.duration : 0),
-      loadedmetadata: () =>
-        setDuration(Number.isFinite(audio.duration) ? audio.duration : 0),
-      play: () => setIsPlaying(true),
-      pause: () => setIsPlaying(false),
-    };
-
     const onEnded = () => {
+      const audio = playback.audio;
+      setIsPlaying(false);
       if (repeatRef.current === "one") {
         audio.currentTime = 0;
-        void audio.play().catch(() => setIsPlaying(false));
+        playback.load(audio.getAttribute("src") ?? undefined, true);
         return;
       }
 
@@ -156,22 +144,24 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audio.pause();
     };
 
-    audio.addEventListener("timeupdate", handlers.timeupdate);
-    audio.addEventListener("durationchange", handlers.durationchange);
-    audio.addEventListener("loadedmetadata", handlers.loadedmetadata);
-    audio.addEventListener("play", handlers.play);
-    audio.addEventListener("pause", handlers.pause);
-    audio.addEventListener("ended", onEnded);
+    const updateDuration = () => {
+      const duration = playback.audio.duration;
+      setDuration(Number.isFinite(duration) ? duration : 0);
+    };
+    const playback = new AudioPlayback({
+      timeupdate: () => setCurrentTime(playback.audio.currentTime),
+      durationchange: updateDuration,
+      loadedmetadata: updateDuration,
+      play: () => setIsPlaying(true),
+      pause: () => setIsPlaying(false),
+      error: () => setIsPlaying(false),
+      ended: onEnded,
+    }, () => setIsPlaying(false));
+    playbackRef.current = playback;
 
     return () => {
-      audio.pause();
-      audio.removeEventListener("timeupdate", handlers.timeupdate);
-      audio.removeEventListener("durationchange", handlers.durationchange);
-      audio.removeEventListener("loadedmetadata", handlers.loadedmetadata);
-      audio.removeEventListener("play", handlers.play);
-      audio.removeEventListener("pause", handlers.pause);
-      audio.removeEventListener("ended", onEnded);
-      audioRef.current = null;
+      playback.dispose();
+      playbackRef.current = null;
     };
   }, [load, setIndex]);
 
@@ -188,15 +178,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const playNow = useCallback((track: TrackWithUrls) => play([track], 0), [play]);
 
-  const toggle = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio || !audio.src) return;
+  useEffect(() => {
+    if (queueIndex >= 0) prepare(queue[queueIndex + 1]);
+  }, [queue, queueIndex, prepare]);
 
-    if (audio.paused) {
-      void audio.play().catch(() => setIsPlaying(false));
-    } else {
-      audio.pause();
-    }
+  const toggle = useCallback(() => {
+    playbackRef.current?.toggle();
   }, []);
 
   const next = useCallback(() => {
@@ -217,11 +204,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    audioRef.current?.pause();
+    playbackRef.current?.audio.pause();
   }, [load, setIndex]);
 
   const previous = useCallback(() => {
-    const audio = audioRef.current;
+    const audio = playbackRef.current?.audio;
 
     if (audio && audio.currentTime > 3) {
       audio.currentTime = 0;
@@ -239,7 +226,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [load, setIndex]);
 
   const seek = useCallback((time: number) => {
-    const audio = audioRef.current;
+    const audio = playbackRef.current?.audio;
     if (!audio) return;
 
     audio.currentTime = time;
@@ -248,7 +235,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const setVolume = useCallback((nextVolume: number) => {
     const clamped = Math.min(Math.max(nextVolume, 0), 1);
-    const audio = audioRef.current;
+    const audio = playbackRef.current?.audio;
     if (audio) audio.volume = clamped;
 
     setVolumeState(clamped);
@@ -256,7 +243,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleMute = useCallback(() => {
-    const audio = audioRef.current;
+    const audio = playbackRef.current?.audio;
     if (audio) audio.muted = !audio.muted;
     setMuted((value) => !value);
   }, []);
@@ -333,6 +320,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setNowPlayingOpen,
       play,
       playNow,
+      prepare,
       toggle,
       next,
       previous,
@@ -362,6 +350,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setNowPlayingOpen,
       play,
       playNow,
+      prepare,
       toggle,
       next,
       previous,

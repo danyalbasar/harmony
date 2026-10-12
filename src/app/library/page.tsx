@@ -13,7 +13,7 @@ export default function LibraryPage() {
 
 function Library() {
   const { tracks, libraryLoading } = useMusic();
-  const { play, isPlaying, current } = usePlayer();
+  const { play, prepare, isPlaying, current } = usePlayer();
 
   const playingWholeLibrary = current?.id === tracks[0]?.id && isPlaying;
 
@@ -33,6 +33,9 @@ function Library() {
         <button
           type="button"
           onClick={() => play(tracks, 0)}
+          onPointerEnter={() => prepare(tracks[0])}
+          onFocus={() => prepare(tracks[0])}
+          onTouchStart={() => prepare(tracks[0])}
           disabled={tracks.length === 0}
           className="flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:opacity-40"
         >

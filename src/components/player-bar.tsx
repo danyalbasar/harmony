@@ -107,7 +107,7 @@ export function PlayerBar() {
               type="button"
               onClick={toggle}
               disabled={!current}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-text text-black transition hover:scale-105 disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-text text-black transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent disabled:opacity-40"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (

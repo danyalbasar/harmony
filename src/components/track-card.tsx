@@ -11,7 +11,7 @@ type TrackCardProps = {
 };
 
 export function TrackCard({ track, tracks }: TrackCardProps) {
-  const { current, isPlaying, play, toggle, setNowPlayingOpen } = usePlayer();
+  const { current, isPlaying, play, prepare, toggle, setNowPlayingOpen } = usePlayer();
   const isCurrent = current?.id === track.id;
 
   // The card opens the big cover view, its play button just starts the song.
@@ -24,7 +24,12 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
   };
 
   return (
-    <div className="group relative rounded-lg bg-card p-3 transition hover:bg-card-hover">
+    <div
+      onPointerEnter={() => prepare(track)}
+      onFocus={() => prepare(track)}
+      onTouchStart={() => prepare(track)}
+      className="group relative rounded-lg bg-card p-3 transition hover:bg-card-hover"
+    >
       <div className="relative">
         <button
           type="button"
@@ -40,19 +45,19 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
           />
         </button>
 
-      <button
-        type="button"
-        onClick={() => {
-          if (isCurrent) {
-            toggle();
-            return;
-          }
+        <button
+          type="button"
+          onClick={() => {
+            if (isCurrent) {
+              toggle();
+              return;
+            }
 
-          play(tracks, tracks.findIndex((t) => t.id === track.id));
-        }}
-        className="absolute bottom-2 right-2 flex h-11 w-11 translate-y-2 items-center justify-center rounded-full bg-accent text-black opacity-0 shadow-lg transition duration-150 group-hover:translate-y-0 group-hover:opacity-100 focus-visible:translate-y-0 focus-visible:opacity-100"
-        aria-label={isCurrent && isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
-      >
+            play(tracks, tracks.findIndex((t) => t.id === track.id));
+          }}
+          className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-black shadow-lg transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label={isCurrent && isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
+        >
           {isCurrent && isPlaying ? (
             <PauseIcon className="h-5 w-5" />
           ) : (

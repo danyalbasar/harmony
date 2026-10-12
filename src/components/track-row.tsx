@@ -20,7 +20,7 @@ type TrackRowProps = {
 };
 
 export function TrackRow({ track, index }: TrackRowProps) {
-  const { current, isPlaying, play, addToQueue, setNowPlayingOpen } = usePlayer();
+  const { current, isPlaying, play, prepare, toggle, addToQueue, setNowPlayingOpen } = usePlayer();
   // Playlists are paused: only removeTrack is still used from here.
   // const { user, playlists, addToPlaylist, removeFromPlaylist, removeTrack } = useMusic();
   const { user, removeTrack, tracks } = useMusic();
@@ -77,15 +77,18 @@ export function TrackRow({ track, index }: TrackRowProps) {
 
   return (
     <div
+      onPointerEnter={() => prepare(track)}
+      onFocus={() => prepare(track)}
+      onTouchStart={() => prepare(track)}
       className={`group grid grid-cols-[16px_minmax(0,4fr)_minmax(0,3fr)_auto] items-center gap-4 rounded-md px-2 py-2 transition md:grid-cols-[16px_minmax(0,6fr)_minmax(0,4fr)_minmax(0,3fr)_auto] ${
         isCurrent ? "bg-card-hover" : "hover:bg-card"
       }`}
     >
       <button
         type="button"
-        onClick={playFromLibrary}
+        onClick={() => isCurrent ? toggle() : playFromLibrary()}
         className="flex h-4 w-4 items-center justify-center text-muted transition hover:text-text"
-        aria-label={`Play ${track.title}`}
+        aria-label={isCurrent && isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
       >
         {isCurrent && isPlaying ? (
           <span className="flex h-3.5 w-3.5 items-end justify-between text-accent-soft" aria-hidden="true">
@@ -109,7 +112,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
         <button
           type="button"
           onClick={() => {
-            playFromLibrary();
+            if (!isCurrent) playFromLibrary();
             setNowPlayingOpen(true);
           }}
           className="flex min-w-0 flex-1 items-center gap-3 rounded text-left transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

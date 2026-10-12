@@ -6,7 +6,7 @@ import { usePlayer } from "@/context/player-context";
 import { SignOutButton } from "@/components/sign-out-button";
 import { TrackCard } from "@/components/track-card";
 import { TrackRow } from "@/components/track-row";
-import { PlayIcon } from "@/components/icons";
+import { PauseIcon, PlayIcon } from "@/components/icons";
 import type { TrackWithUrls } from "@/lib/tracks";
 
 export default function HomePage() {
@@ -126,7 +126,7 @@ type QuickItem = {
 };
 
 function QuickGrid({ items }: { items: QuickItem[] }) {
-  const { play } = usePlayer();
+  const { play, prepare, current, isPlaying, toggle } = usePlayer();
 
   if (items.length === 0) return null;
 
@@ -138,6 +138,9 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
         return (
           <div
             key={item.key}
+            onPointerEnter={() => prepare(item.tracks[item.startIndex ?? 0])}
+            onFocus={() => prepare(item.tracks[item.startIndex ?? 0])}
+            onTouchStart={() => prepare(item.tracks[item.startIndex ?? 0])}
             className="group relative flex items-center gap-4 overflow-hidden rounded-lg bg-card transition hover:bg-card-hover"
           >
             <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-[#1b1730]">
@@ -165,11 +168,15 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
             ) : (
               <button
                 type="button"
-                onClick={() => play(item.tracks, item.startIndex ?? 0)}
-                className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black opacity-0 shadow-lg transition group-hover:opacity-100 focus-visible:opacity-100"
-                aria-label={`Play ${item.title}`}
+                onClick={() => current?.id === item.key ? toggle() : play(item.tracks, item.startIndex ?? 0)}
+                className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black shadow-lg transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                aria-label={current?.id === item.key && isPlaying ? `Pause ${item.title}` : `Play ${item.title}`}
               >
-                <PlayIcon className="h-4 w-4 translate-x-[1px]" />
+                {current?.id === item.key && isPlaying ? (
+                  <PauseIcon className="h-4 w-4" />
+                ) : (
+                  <PlayIcon className="h-4 w-4 translate-x-[1px]" />
+                )}
               </button>
             )}
           </div>

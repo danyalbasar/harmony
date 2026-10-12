@@ -1,6 +1,7 @@
 import type { ComponentType, SVGProps } from "react";
 
 import { DotsThree } from "@phosphor-icons/react/dist/csr/DotsThree";
+import { BookOpenIcon } from "@phosphor-icons/react/dist/csr/BookOpen";
 import { House } from "@phosphor-icons/react/dist/csr/House";
 import { Image } from "@phosphor-icons/react/dist/csr/Image";
 import { Key } from "@phosphor-icons/react/dist/csr/Key";
@@ -21,7 +22,6 @@ import { SpeakerLow } from "@phosphor-icons/react/dist/csr/SpeakerLow";
 import { SpeakerSlash } from "@phosphor-icons/react/dist/csr/SpeakerSlash";
 import { Trash } from "@phosphor-icons/react/dist/csr/Trash";
 import { UploadSimple } from "@phosphor-icons/react/dist/csr/UploadSimple";
-import { VinylRecord } from "@phosphor-icons/react/dist/csr/VinylRecord";
 import { X } from "@phosphor-icons/react/dist/csr/X";
 import { CloudRain } from "@phosphor-icons/react/dist/csr/CloudRain";
 
@@ -73,7 +73,7 @@ export const CloseIcon = icon(X, "bold");
 export const MoreIcon = icon(DotsThree, "bold");
 
 export const MusicIcon = icon(MusicNotes, "fill");
-export const LibraryIcon = icon(VinylRecord, "fill");
+export const LibraryIcon = icon(BookOpenIcon, "bold");
 export const UploadIcon = icon(UploadSimple, "fill");
 export const MoonIcon = icon(Moon, "fill");
 export const RainIcon = icon(CloudRain, "fill");
@@ -83,10 +83,7 @@ export const KeyIcon = icon(Key, "fill");
 /**
  * Not a Phosphor icon, same as the equalizer below.
  *
- * These bars were previously 80 wide around a 24 gap, which is too heavy: the
- * bars were more than three times the gap, so at 16px they filled in as two
- * solid blocks. They are 36 wide around a 40 gap now, so the gap is wider than
- * a bar and the glyph stays legible when small.
+ * Solid bars with a clear gap stay readable even in the compact player.
  */
 export function PauseIcon({ className, ...props }: IconProps) {
   return (
@@ -98,7 +95,8 @@ export function PauseIcon({ className, ...props }: IconProps) {
       className={className}
       {...props}
     >
-      <path d="M80,40h20a8,8,0,0,1,8,8v160a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V48A8,8,0,0,1,80,40Zm76,0h20a8,8,0,0,1,8,8v160a8,8,0,0,1-8,8H156a8,8,0,0,1-8-8V48A8,8,0,0,1,156,40Z" />
+      <rect x="56" y="40" width="56" height="176" rx="8" />
+      <rect x="144" y="40" width="56" height="176" rx="8" />
     </svg>
   );
 }

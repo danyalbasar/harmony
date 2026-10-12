@@ -1,7 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { usePlayer } from "@/context/player-context";
 import { useMusic } from "@/context/music-context";
 import { Sidebar } from "@/components/sidebar";
 import { MobileNav } from "@/components/mobile-nav";
@@ -16,9 +17,15 @@ import { SleepButton } from "@/components/sleep-button";
  * place that has to behave like a private tool.
  */
 export function AppShell({ children }: { children: ReactNode }) {
-  const { loading } = useMusic();
+  const { loading, tracks } = useMusic();
+  const { prepare, current } = usePlayer();
+  const firstTrack = tracks[0];
   const pathname = usePathname();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  useEffect(() => {
+    if (!isAdmin && !current) prepare(firstTrack);
+  }, [isAdmin, current, firstTrack, prepare]);
 
   if (isAdmin) {
     return <>{children}</>;
