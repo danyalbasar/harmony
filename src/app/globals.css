@@ -172,3 +172,76 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   input[type="range"]::-webkit-slider-thumb { opacity: 1; }
   input[type="range"]::-moz-range-thumb { opacity: 1; }
 }
+
+/* The full player uses the available screen, with a split layout in landscape. */
+.full-player {
+  background: #17131f;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.full-player-background {
+  background: linear-gradient(160deg, #473452 0%, #29212d 45%, #111014 100%);
+}
+
+.full-player-header {
+  min-height: 64px;
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
+}
+
+.full-player-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+  max-width: 528px;
+  margin-inline: auto;
+  padding: 16px max(24px, env(safe-area-inset-right, 0px)) 24px max(24px, env(safe-area-inset-left, 0px));
+  gap: 28px;
+}
+
+.full-player-artwork {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-player-cover {
+  width: min(100%, max(180px, calc(100dvh - 390px)));
+  flex-shrink: 0;
+}
+
+.full-player-controls { flex-shrink: 0; }
+
+.full-player-icon {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition: background-color 150ms ease;
+}
+
+.full-player-icon:hover { background-color: #ffffff0d; }
+.full-player input[type="range"]::-webkit-slider-thumb { opacity: 1; }
+.full-player input[type="range"]::-moz-range-thumb { opacity: 1; }
+
+@media (min-width: 700px) and (orientation: landscape) {
+  .full-player-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    max-width: 1200px;
+    padding-block: 24px;
+    gap: clamp(32px, 5vw, 80px);
+  }
+  .full-player-cover { width: min(100%, max(180px, calc(100dvh - 144px)), 520px); }
+}
+
+@media (max-height: 650px) and (orientation: portrait) {
+  .full-player-content { padding-top: 8px; padding-bottom: 16px; gap: 20px; }
+  .full-player-controls h2 { font-size: 22px; }
+}

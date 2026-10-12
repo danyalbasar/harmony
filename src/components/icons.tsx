@@ -2,6 +2,7 @@ import type { ComponentType, SVGProps } from "react";
 
 import { DotsThree } from "@phosphor-icons/react/dist/csr/DotsThree";
 import { BookOpenIcon } from "@phosphor-icons/react/dist/csr/BookOpen";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/csr/CaretDown";
 import { House } from "@phosphor-icons/react/dist/csr/House";
 import { Image } from "@phosphor-icons/react/dist/csr/Image";
 import { Key } from "@phosphor-icons/react/dist/csr/Key";
@@ -70,6 +71,7 @@ export const ImageIcon = icon(Image, "regular");
 export const PlusIcon = icon(Plus, "bold");
 export const TrashIcon = icon(Trash, "bold");
 export const CloseIcon = icon(X, "bold");
+export const ChevronDownIcon = icon(CaretDownIcon, "bold");
 export const MoreIcon = icon(DotsThree, "bold");
 
 export const MusicIcon = icon(MusicNotes, "fill");
