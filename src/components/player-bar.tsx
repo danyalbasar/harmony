@@ -28,7 +28,7 @@ export function PlayerBar() {
             <button type="button" onClick={previous} disabled={!current} aria-label="Previous" className="hidden h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:text-text disabled:opacity-40 lg:flex"><PreviousIcon className="h-4 w-4" /></button>
             <button type="button" onClick={toggle} disabled={!current} aria-label={isPlaying ? "Pause" : "Play"}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-text text-black transition-colors hover:bg-white disabled:opacity-40">
-              {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5 translate-x-[1px]" />}
+              {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5" />}
             </button>
             <button type="button" onClick={next} disabled={!current} aria-label="Next" className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:text-text disabled:opacity-40"><NextIcon className="h-5 w-5 lg:h-4 lg:w-4" /></button>
             <span className="hidden lg:block"><ToggleButton label={repeatLabel} active={repeat !== "off"} onClick={cycleRepeat} disabled={!current}>{repeat === "one" ? <RepeatOneIcon className="h-4 w-4" /> : <RepeatIcon className="h-4 w-4" />}</ToggleButton></span>

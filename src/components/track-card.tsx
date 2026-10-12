@@ -61,7 +61,7 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
           {isCurrent && isPlaying ? (
             <PauseIcon className="h-5 w-5" />
           ) : (
-            <PlayIcon className="h-5 w-5 translate-x-[1px]" />
+            <PlayIcon className="h-5 w-5" />
           )}
         </button>
       </div>

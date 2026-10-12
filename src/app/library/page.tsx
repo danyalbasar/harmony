@@ -39,7 +39,7 @@ function Library() {
           disabled={tracks.length === 0}
           className="flex min-h-11 items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:opacity-40"
         >
-          <PlayIcon className="h-4 w-4 translate-x-[1px]" />
+          <PlayIcon className="h-4 w-4" />
           {playingWholeLibrary ? "Playing" : "Play all"}
         </button>
       </div>
