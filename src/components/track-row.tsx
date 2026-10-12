@@ -190,7 +190,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
               <MenuItem
                 label="Play next"
                 onClick={() => {
-                  addToQueue(track);
+                  addToQueue(track, true);
                   toast(`${track.title} added to the queue`);
                   setMenuOpen(false);
                 }}

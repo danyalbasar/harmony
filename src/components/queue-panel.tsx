@@ -7,13 +7,13 @@ import { CloseIcon, EqualizerIcon } from "@/components/icons";
 import { formatTime } from "@/lib/tracks";
 
 export function QueuePanel() {
-  const { queue, queueIndex, current, isPlaying, queueOpen, setQueueOpen, removeFromQueue, clearUpcoming, play, prepare } =
+  const { queue, current, isPlaying, queueOpen, nowPlayingOpen, setQueueOpen, removeFromQueue, clearUpcoming, playQueued, prepare } =
     usePlayer();
 
   const dialogRef = useModal<HTMLElement>(queueOpen, () => setQueueOpen(false));
   if (!queueOpen) return null;
 
-  const upcoming = queue.slice(queueIndex + 1);
+  const upcoming = queue;
 
   return (
     <>
@@ -22,7 +22,7 @@ export function QueuePanel() {
           type="button"
           aria-label="Close queue"
           onClick={() => setQueueOpen(false)}
-          className="fixed inset-0 z-[65] bg-black/60"
+          className="fixed inset-0 z-[85] bg-black/60"
         />
       ) : null}
 
@@ -32,7 +32,7 @@ export function QueuePanel() {
         aria-modal="true"
         aria-label="Queue"
         tabIndex={-1}
-        className="safe-inline fixed inset-0 z-[70] flex h-dvh w-full flex-col bg-elevated pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] lg:left-auto lg:bottom-[var(--player-height)] lg:h-auto lg:max-w-sm lg:border-l lg:border-line"
+        className={`safe-inline fixed right-0 top-0 z-[90] flex flex-col border-l border-line bg-elevated pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] ${nowPlayingOpen ? "h-dvh w-[min(384px,92vw)]" : "h-dvh w-full lg:bottom-[var(--player-height)] lg:h-auto lg:max-w-sm"}`}
       >
         <header className="flex items-center justify-between px-4 py-3">
           <h2 className="text-[16px] font-semibold text-text">Queue</h2>
@@ -80,12 +80,11 @@ export function QueuePanel() {
 
           {upcoming.length === 0 ? (
             <p className="px-4 text-sm text-dim">
-              Nothing queued. Hit play on a song or add one from the ⋯ menu.
+              Your queue is empty. Add songs using “Add to queue” or “Play next” in a song’s menu.
             </p>
           ) : (
             <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-0 pb-4">
-              {upcoming.map((track, offset) => {
-                const index = queueIndex + 1 + offset;
+              {upcoming.map((track, index) => {
 
                 return (
                   <li
@@ -94,7 +93,7 @@ export function QueuePanel() {
                   >
                     <button
                       type="button"
-                      onClick={() => play(queue, index)}
+                      onClick={() => playQueued(index)}
                       className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
                       onPointerEnter={() => prepare(track)}
                       onFocus={() => prepare(track)}

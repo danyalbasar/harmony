@@ -22,7 +22,7 @@ import {
 import { formatTime } from "@/lib/tracks";
 
 export function NowPlayingOverlay() {
-  const { current, nowPlayingOpen, setNowPlayingOpen } = usePlayer();
+  const { current, nowPlayingOpen, setNowPlayingOpen, queueOpen } = usePlayer();
   const startY = useRef<number | null>(null);
   const dialogRef = useModal(Boolean(nowPlayingOpen && current), () => setNowPlayingOpen(false));
 
@@ -43,7 +43,8 @@ export function NowPlayingOverlay() {
       ref={dialogRef}
       tabIndex={-1}
       role="dialog"
-      aria-modal="true"
+      aria-modal={!queueOpen}
+      aria-hidden={queueOpen || undefined}
       aria-label={`Now playing ${current.title}`}
       className="full-player fixed inset-0 z-[70] flex h-dvh flex-col overflow-hidden text-white"
     >
@@ -165,7 +166,7 @@ function PlayerOptions() {
       </Link>
       <button
         type="button"
-        onClick={() => { setNowPlayingOpen(false); setQueueOpen(true); }}
+        onClick={() => setQueueOpen(true)}
         aria-label="Queue"
         className="full-player-icon text-white/70"
       >
@@ -201,7 +202,7 @@ function Transport() {
   const { current, isPlaying, shuffle, repeat, toggle, next, previous, toggleShuffle, cycleRepeat } = usePlayer();
   const repeatLabel = repeat === "one" ? "Repeat one" : repeat === "all" ? "Repeat all" : "Repeat off";
   return (
-    <div className="mt-5 flex items-center justify-between gap-1">
+    <div className="mt-5 grid grid-cols-[1fr_1fr_68px_1fr_1fr] items-center justify-items-center gap-1">
       <button
         type="button" onClick={toggleShuffle} disabled={!current}
         aria-label="Shuffle" aria-pressed={shuffle}
@@ -217,7 +218,7 @@ function Transport() {
         aria-label={isPlaying ? "Pause" : "Play"}
         className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-full bg-white text-[#101010] transition-colors hover:bg-white/90 disabled:opacity-40"
       >
-        {isPlaying ? <PauseIcon className="h-7 w-7" /> : <PlayIcon className="h-7 w-7 translate-x-[1px]" />}
+        {isPlaying ? <PauseIcon className="h-7 w-7" /> : <PlayIcon className="h-7 w-7" />}
       </button>
       <button type="button" onClick={next} disabled={!current} aria-label="Next" className="full-player-icon">
         <NextIcon className="h-7 w-7" />

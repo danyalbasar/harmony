@@ -102,6 +102,17 @@ test("replacing a preload leaves the playing song alone and cleanup stops both d
   assert.ok(elements.every((audio) => audio.src === "" && audio.paused));
 });
 
+test("explicitly queuing the current song again restarts it without reloading its buffer", () => {
+  const { player } = setup();
+  player.load("song-a.mp3", true);
+  player.audio.currentTime = 42;
+  const loads = player.audio.loadCount;
+  player.load("song-a.mp3", true, true);
+  assert.equal(player.audio.currentTime, 0);
+  assert.equal(player.audio.loadCount, loads);
+  player.dispose();
+});
+
 test("a rejected old play request cannot overwrite a newer song's playback state", async () => {
   const { player, errors } = setup();
   player.load("song-a.mp3", true);

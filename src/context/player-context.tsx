@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { PlaybackQueue } from "@/lib/playback-queue";
 import { AudioPlayback } from "@/lib/audio-playback";
 import type { TrackWithUrls } from "@/lib/tracks";
 
@@ -25,7 +26,6 @@ type PlayerContextValue = {
   shuffle: boolean;
   repeat: RepeatMode;
   queue: TrackWithUrls[];
-  queueIndex: number;
   queueOpen: boolean;
   setQueueOpen: (open: boolean) => void;
   nowPlayingOpen: boolean;
@@ -41,34 +41,22 @@ type PlayerContextValue = {
   toggleMute: () => void;
   toggleShuffle: () => void;
   cycleRepeat: () => void;
-  addToQueue: (track: TrackWithUrls) => void;
+  addToQueue: (track: TrackWithUrls, playNext?: boolean) => void;
+  playQueued: (index: number) => void;
   removeFromQueue: (index: number) => void;
   clearUpcoming: () => void;
 };
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
 
-function shuffled(length: number) {
-  const order = Array.from({ length }, (_, index) => index);
-
-  for (let index = order.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(Math.random() * (index + 1));
-    [order[index], order[swap]] = [order[swap], order[index]];
-  }
-
-  return order;
-}
-
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const playbackRef = useRef<AudioPlayback | null>(null);
-  const queueRef = useRef<TrackWithUrls[]>([]);
-  const indexRef = useRef(-1);
+  const [selection] = useState(() => new PlaybackQueue());
+  const [selected, setSelected] = useState(() => selection.snapshot());
+  const { current, queue } = selected;
   const shuffleRef = useRef(false);
   const repeatRef = useRef<RepeatMode>("off");
-  const orderRef = useRef<number[]>([]);
 
-  const [queue, setQueueState] = useState<TrackWithUrls[]>([]);
-  const [queueIndex, setQueueIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -79,30 +67,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [queueOpen, setQueueOpen] = useState(false);
   const [nowPlayingOpen, setNowPlayingOpen] = useState(false);
 
-  const setQueue = useCallback((next: TrackWithUrls[]) => {
-    queueRef.current = next;
-    orderRef.current = next.length > 1 ? shuffled(next.length) : next.map((_, index) => index);
-    setQueueState(next);
-  }, []);
-
-  const setIndex = useCallback((next: number) => {
-    indexRef.current = next;
-    setQueueIndex(next);
-  }, []);
+  const publish = useCallback(() => setSelected(selection.snapshot()), [selection]);
 
   const prepare = useCallback((track: TrackWithUrls | undefined) => {
     playbackRef.current?.prepare(track?.audioUrl);
   }, []);
 
-  const load = useCallback((source: string | undefined, autoplay: boolean) => {
+  const load = useCallback((source: string | undefined, autoplay: boolean, restart = false) => {
     const playback = playbackRef.current;
     if (!playback || !source) return;
     const sameSource = playback.audio.getAttribute("src") === source;
     if (!sameSource) setIsPlaying(false);
-    playback.load(source, autoplay);
+    playback.load(source, autoplay, restart);
     setCurrentTime(playback.audio.currentTime);
     setDuration(Number.isFinite(playback.audio.duration) ? playback.audio.duration : 0);
   }, []);
+
+  const next = useCallback(() => {
+    const track = selection.next(shuffleRef.current, repeatRef.current === "all");
+    publish();
+    if (track) load(track.audioUrl, true, true);
+    else playbackRef.current?.audio.pause();
+  }, [selection, publish, load]);
 
   useEffect(() => {
     const onEnded = () => {
@@ -114,34 +100,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const items = queueRef.current;
-      const index = indexRef.current;
-
-      if (shuffleRef.current && orderRef.current.length > 0) {
-        const currentId = items[index]?.id;
-        const candidates = orderRef.current.filter((i) => items[i]?.id !== currentId);
-
-        if (candidates.length > 0) {
-          const pick = candidates[Math.floor(Math.random() * candidates.length)];
-          setIndex(pick);
-          load(items[pick]?.audioUrl, true);
-          return;
-        }
-      }
-
-      if (index + 1 < items.length) {
-        setIndex(index + 1);
-        load(items[index + 1]?.audioUrl, true);
-        return;
-      }
-
-      if (repeatRef.current === "all" && items.length > 0) {
-        setIndex(0);
-        load(items[0]?.audioUrl, true);
-        return;
-      }
-
-      audio.pause();
+      next();
     };
 
     const updateDuration = () => {
@@ -163,49 +122,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       playback.dispose();
       playbackRef.current = null;
     };
-  }, [load, setIndex]);
+  }, [next]);
 
-  const play = useCallback(
-    (tracks: TrackWithUrls[], startIndex = 0) => {
-      if (tracks.length === 0) return;
+  const play = useCallback((tracks: TrackWithUrls[], startIndex = 0) => {
+    const track = selection.start(tracks, startIndex);
+    if (!track) return;
+    publish();
+    load(track.audioUrl, true);
+  }, [selection, publish, load]);
 
-      setQueue(tracks);
-      setIndex(startIndex);
-      load(tracks[startIndex]?.audioUrl, true);
-    },
-    [load, setIndex, setQueue],
-  );
+  const playQueued = useCallback((index: number) => {
+    const track = selection.playQueued(index);
+    if (!track) return;
+    publish();
+    load(track.audioUrl, true, true);
+  }, [selection, publish, load]);
 
   const playNow = useCallback((track: TrackWithUrls) => play([track], 0), [play]);
 
   useEffect(() => {
-    if (queueIndex >= 0) prepare(queue[queueIndex + 1]);
-  }, [queue, queueIndex, prepare]);
+    if (current) prepare(selected.next);
+  }, [current, selected.next, prepare]);
 
   const toggle = useCallback(() => {
     playbackRef.current?.toggle();
   }, []);
-
-  const next = useCallback(() => {
-    const items = queueRef.current;
-    const index = indexRef.current;
-
-    if (items.length === 0) return;
-
-    if (index + 1 < items.length) {
-      setIndex(index + 1);
-      load(items[index + 1]?.audioUrl, true);
-      return;
-    }
-
-    if (repeatRef.current === "all") {
-      setIndex(0);
-      load(items[0]?.audioUrl, true);
-      return;
-    }
-
-    playbackRef.current?.audio.pause();
-  }, [load, setIndex]);
 
   const previous = useCallback(() => {
     const audio = playbackRef.current?.audio;
@@ -216,14 +157,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const items = queueRef.current;
-    const index = indexRef.current;
-    if (items.length === 0) return;
-
-    const target = Math.max(index - 1, 0);
-    setIndex(target);
-    load(items[target]?.audioUrl, true);
-  }, [load, setIndex]);
+    const track = selection.previous();
+    if (!track) return;
+    publish();
+    if (audio && audio.getAttribute("src") === track.audioUrl) audio.currentTime = 0;
+    load(track.audioUrl, true);
+  }, [selection, publish, load]);
 
   const seek = useCallback((time: number) => {
     const audio = playbackRef.current?.audio;
@@ -266,44 +205,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const addToQueue = useCallback(
-    (track: TrackWithUrls) => {
-      const items = queueRef.current;
+  const addToQueue = useCallback((track: TrackWithUrls, playNext = false) => {
+    selection.enqueue(track, playNext);
+    publish();
+  }, [selection, publish]);
 
-      if (items.length === 0) {
-        setQueue([track]);
-        setIndex(0);
-        load(track.audioUrl, true);
-        return;
-      }
-
-      setQueue([...items.filter((item) => item.id !== track.id), track]);
-    },
-    [load, setIndex, setQueue],
-  );
-
-  const removeFromQueue = useCallback(
-    (index: number) => {
-      const items = queueRef.current;
-      const currentIndex = indexRef.current;
-
-      setQueue(items.filter((_, position) => position !== index));
-
-      if (index < currentIndex) {
-        setIndex(currentIndex - 1);
-      } else if (index === currentIndex) {
-        setIndex(Math.min(currentIndex, items.length - 2));
-      }
-    },
-    [setIndex, setQueue],
-  );
+  const removeFromQueue = useCallback((index: number) => {
+    selection.remove(index);
+    publish();
+  }, [selection, publish]);
 
   const clearUpcoming = useCallback(() => {
-    const index = indexRef.current;
-    setQueue(queueRef.current.slice(0, index + 1));
-  }, [setQueue]);
-
-  const current = queueIndex >= 0 ? (queue[queueIndex] ?? null) : null;
+    selection.clear();
+    publish();
+  }, [selection, publish]);
 
   const value = useMemo<PlayerContextValue>(
     () => ({
@@ -316,7 +231,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       shuffle,
       repeat,
       queue,
-      queueIndex,
       queueOpen,
       setQueueOpen,
       nowPlayingOpen,
@@ -333,6 +247,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       toggleShuffle,
       cycleRepeat,
       addToQueue,
+      playQueued,
       removeFromQueue,
       clearUpcoming,
     }),
@@ -346,7 +261,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       shuffle,
       repeat,
       queue,
-      queueIndex,
       queueOpen,
       setQueueOpen,
       nowPlayingOpen,
@@ -363,6 +277,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       toggleShuffle,
       cycleRepeat,
       addToQueue,
+      playQueued,
       removeFromQueue,
       clearUpcoming,
     ],

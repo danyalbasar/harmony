@@ -44,7 +44,7 @@ export class AudioPlayback {
     });
   }
 
-  load(source: string | undefined, autoplay: boolean) {
+  load(source: string | undefined, autoplay: boolean, restart = false) {
     if (!source) return;
     ++this.request;
     if (this.prepared?.getAttribute("src") === source) {
@@ -59,7 +59,7 @@ export class AudioPlayback {
     } else if (this.audio.getAttribute("src") !== source) {
       this.audio.src = source;
       this.audio.load();
-    } else if (this.audio.ended) {
+    } else if (restart || this.audio.ended) {
       this.audio.currentTime = 0;
     }
     if (autoplay) this.start();
