@@ -45,7 +45,7 @@ export function Sidebar() {
   // };
 
   return (
-    <nav className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col gap-2 border-r border-line bg-elevated p-3 md:flex">
+    <nav className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col gap-2 border-r border-line bg-elevated p-3 lg:flex">
       <Link
         href="/"
         className="flex items-center gap-3 rounded-md px-3 py-2 text-xl font-bold tracking-tight"

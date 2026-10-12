@@ -12,7 +12,7 @@ export default function SearchPage() {
 
 function Search() {
   const { tracks, libraryLoading } = useMusic();
-  const { play } = usePlayer();
+  const { play, prepare } = usePlayer();
   const [query, setQuery] = useState("");
 
   const normalized = query.trim().toLowerCase();
@@ -44,7 +44,7 @@ function Search() {
   return (
     <div className="flex flex-col gap-8 pb-10">
       <header className="flex flex-col gap-5">
-        <h1 className="text-3xl font-bold tracking-tight">Search</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl tracking-tight">Search</h1>
 
         <div className="flex items-center gap-3 rounded-full border border-line bg-elevated px-4 py-3 transition focus-within:border-accent">
           <SearchIcon className="h-5 w-5 shrink-0 text-muted" />
@@ -52,7 +52,10 @@ function Search() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="What do you want to listen to?"
-            className="w-full bg-transparent text-sm text-text placeholder:text-dim focus:outline-none"
+            type="search"
+            autoComplete="off"
+            enterKeyHint="search"
+            className="min-w-0 w-full bg-transparent text-sm text-text placeholder:text-dim focus:outline-none"
             aria-label="Search your library"
           />
         </div>
@@ -60,7 +63,7 @@ function Search() {
 
       {matchingTracks.length > 0 ? (
         <section>
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold tracking-tight">
               {normalized ? `Songs · ${matchingTracks.length}` : "Songs"}
             </h2>
@@ -68,7 +71,9 @@ function Search() {
               <button
                 type="button"
                 onClick={() => play(matchingTracks, 0)}
-                className="rounded-full border border-line px-4 py-1.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-text"
+                onPointerEnter={() => prepare(matchingTracks[0])}
+                onFocus={() => prepare(matchingTracks[0])}
+                className="rounded-full border min-h-11 border-line px-4 py-2.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-text"
               >
                 Play all
               </button>
@@ -104,7 +109,7 @@ function Search() {
                   <button
                     type="button"
                     onClick={() => play(playlist.tracks, 0)}
-                    className="rounded-full border border-line px-4 py-1.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-text"
+                    className="rounded-full border min-h-11 border-line px-4 py-2.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-text"
                   >
                     Play
                   </button>
@@ -119,7 +124,7 @@ function Search() {
       {libraryLoading ? (
         <p className="text-sm text-muted">Loading your library…</p>
       ) : normalized && matchingTracks.length === 0 ? (
-        <p className="text-sm text-muted">No results for “{query}”.</p>
+        <p className="break-words text-sm text-muted">No results for “{query}”.</p>
       ) : null}
     </div>
   );

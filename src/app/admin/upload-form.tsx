@@ -143,8 +143,8 @@ export function UploadForm() {
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="flex min-w-0 flex-col gap-6">
           <div
             onDragOver={(event) => {
               event.preventDefault();
@@ -152,7 +152,7 @@ export function UploadForm() {
             }}
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
-            className={`rounded-xl border-2 border-dashed p-10 text-center transition ${
+            className={`rounded-xl border-2 border-dashed px-4 py-6 text-center sm:p-10 transition ${
               dragging ? "border-accent bg-card" : "border-line bg-elevated/50"
             }`}
           >
@@ -175,7 +175,7 @@ export function UploadForm() {
 
               {audio ? (
                 <>
-                  <p className="text-sm font-semibold">{audio.name}</p>
+                  <p className="max-w-full break-all text-sm font-semibold">{audio.name}</p>
                   <p className="text-xs text-muted">
                     {formatBytes(audio.size)}
                     {duration > 0 ? ` · ${formatTime(duration)}` : ""}
@@ -186,7 +186,7 @@ export function UploadForm() {
                       setAudio(null);
                       setDuration(0);
                     }}
-                    className="mt-1 text-xs text-muted underline-offset-4 transition hover:text-text hover:underline"
+                    className="mt-1 min-h-11 px-3 text-sm text-muted underline-offset-4 transition hover:text-text hover:underline"
                   >
                     Choose a different file
                   </button>
@@ -198,7 +198,7 @@ export function UploadForm() {
                   <button
                     type="button"
                     onClick={() => audioInput.current?.click()}
-                    className="rounded-full bg-text px-6 py-2.5 text-sm font-bold text-black transition hover:scale-[1.02]"
+                    className="min-h-11 rounded-full bg-text px-6 py-2.5 text-sm font-bold text-black transition-colors hover:bg-white"
                   >
                     Choose a file
                   </button>
@@ -230,11 +230,11 @@ export function UploadForm() {
               </>
             ) : null}
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <button
                 type="submit"
                 disabled={busy || !audio}
-                className="rounded-full bg-accent px-8 py-3 text-sm font-bold text-black transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-12 w-full rounded-full bg-accent px-8 sm:w-auto py-3 text-sm font-bold text-black transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {busy ? "Uploading…" : "Upload"}
               </button>
@@ -266,7 +266,7 @@ export function UploadForm() {
                 <button
                   type="button"
                   onClick={clearCover}
-                  className="absolute -right-2 -top-2 rounded-full bg-black p-1.5 text-white shadow-lg transition hover:bg-card-hover"
+                  className="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full bg-black text-white shadow-lg transition hover:bg-card-hover"
                   aria-label="Remove cover art"
                 >
                   <CloseIcon className="h-3.5 w-3.5" />
@@ -289,7 +289,7 @@ export function UploadForm() {
             <button
               type="button"
               onClick={() => coverInput.current?.click()}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-line px-4 py-2.5 text-sm font-semibold text-muted transition hover:border-accent hover:text-text"
+              className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-line px-4 py-2.5 text-sm font-semibold text-muted transition hover:border-accent hover:text-text"
             >
               <ImageIcon className="h-4 w-4" />
               {cover ? "Replace image" : "Choose image"}
@@ -328,7 +328,7 @@ function Field({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="rounded-md border border-line bg-card px-3 py-2.5 text-sm text-text placeholder:text-dim focus:border-accent focus:outline-none"
+        className="min-h-12 min-w-0 w-full rounded-md border border-line bg-card px-3 py-2.5 text-sm text-text placeholder:text-dim focus:border-accent focus:outline-none"
       />
     </label>
   );

@@ -20,10 +20,10 @@ function Home() {
   const liked = tracks.filter((track) => track.album).slice(0, 8);
 
   return (
-    <div className="flex flex-col gap-10 pb-10">
+    <div className="flex flex-col gap-7 pb-4 sm:gap-10 sm:pb-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Home</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Home</h1>
           <p className="mt-1 text-sm text-muted">
             {tracks.length === 0
               ? "Nothing here yet."
@@ -36,7 +36,7 @@ function Home() {
       {libraryError ? (
         <div className="rounded-lg border border-red-500/40 bg-[#2a1416] p-4 text-sm text-red-100">
           {libraryError}{" "}
-          <button type="button" onClick={() => void refreshLibrary()} className="underline">
+          <button type="button" onClick={() => void refreshLibrary()} className="inline-flex min-h-11 items-center px-2 underline">
             Retry
           </button>
         </div>
@@ -75,7 +75,7 @@ function Home() {
       {recent.length > 0 ? (
         <section>
           <h2 className="mb-4 text-xl font-bold tracking-tight">Recently added</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-6">
             {recent.map((track) => (
               <TrackCard key={track.id} track={track} tracks={tracks} />
             ))}
@@ -86,7 +86,7 @@ function Home() {
       {liked.length > 0 && liked.length !== recent.length ? (
         <section>
           <h2 className="mb-4 text-xl font-bold tracking-tight">By album</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-6">
             {liked.map((track) => (
               <TrackCard key={track.id} track={track} tracks={tracks} />
             ))}
@@ -98,11 +98,11 @@ function Home() {
         <section>
           <h2 className="mb-4 text-xl font-bold tracking-tight">All songs</h2>
           <div className="rounded-xl bg-elevated/60 p-2">
-            <div className="grid grid-cols-[16px_minmax(0,4fr)_minmax(0,3fr)_auto] gap-4 border-b border-line/70 px-2 pb-2 text-[11px] font-semibold uppercase tracking-wide text-dim md:grid-cols-[16px_minmax(0,6fr)_minmax(0,4fr)_minmax(0,3fr)_auto]">
+            <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] gap-1 border-b border-line/70 px-2 pb-2 text-[11px] font-semibold uppercase tracking-wide text-dim lg:grid-cols-[44px_minmax(0,6fr)_minmax(0,4fr)_64px_44px] lg:gap-3">
               <span className="text-center">#</span>
               <span>Title</span>
-              <span className="hidden md:block">Album</span>
-              <span className="hidden md:block">Time</span>
+              <span className="hidden lg:block">Album</span>
+              <span className="hidden lg:block">Time</span>
               <span />
             </div>
             {tracks.map((track, index) => (
@@ -131,7 +131,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4">
       {items.map((item) => {
         const cover = item.coverUrl;
 
@@ -141,12 +141,12 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
             onPointerEnter={() => prepare(item.tracks[item.startIndex ?? 0])}
             onFocus={() => prepare(item.tracks[item.startIndex ?? 0])}
             onTouchStart={() => prepare(item.tracks[item.startIndex ?? 0])}
-            className="group relative flex items-center gap-4 overflow-hidden rounded-lg bg-card transition hover:bg-card-hover"
+            className="group relative flex items-center gap-3 overflow-hidden rounded-lg bg-card transition hover:bg-card-hover"
           >
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-[#1b1730]">
+            <div className="flex h-16 w-16 shrink-0 sm:h-20 sm:w-20 items-center justify-center bg-[#1b1730]">
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={cover} alt="" className="h-full w-full object-cover" />
+                <img src={cover} alt="" width={80} height={80} loading="lazy" decoding="async" className="h-full w-full object-cover" />
               ) : (
                 <span className="text-xs font-semibold uppercase text-dim">
                   {item.title.slice(0, 2)}
@@ -154,7 +154,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
               )}
             </div>
 
-            <div className="min-w-0 flex-1 pr-12">
+            <div className="min-w-0 flex-1 pr-16">
               <p className="truncate text-sm font-semibold">{item.title}</p>
               <p className="truncate text-xs text-muted">{item.subtitle}</p>
             </div>
@@ -169,7 +169,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
               <button
                 type="button"
                 onClick={() => current?.id === item.key ? toggle() : play(item.tracks, item.startIndex ?? 0)}
-                className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-black shadow-lg transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="absolute right-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-black shadow-lg transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 aria-label={current?.id === item.key && isPlaying ? `Pause ${item.title}` : `Play ${item.title}`}
               >
                 {current?.id === item.key && isPlaying ? (
@@ -188,7 +188,7 @@ function QuickGrid({ items }: { items: QuickItem[] }) {
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-6">
       {Array.from({ length: 6 }).map((_, index) => (
         <div key={index} className="animate-pulse rounded-lg bg-card p-3">
           <div className="aspect-square w-full rounded bg-[#221c36]" />

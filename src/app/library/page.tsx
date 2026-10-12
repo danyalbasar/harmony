@@ -21,7 +21,7 @@ function Library() {
     <div className="flex flex-col gap-8 pb-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Your Library</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl tracking-tight">Your Library</h1>
           <p className="mt-1 text-sm text-muted">
             {tracks.length} {tracks.length === 1 ? "song" : "songs"}
           </p>
@@ -37,7 +37,7 @@ function Library() {
           onFocus={() => prepare(tracks[0])}
           onTouchStart={() => prepare(tracks[0])}
           disabled={tracks.length === 0}
-          className="flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:opacity-40"
+          className="flex min-h-11 items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:opacity-40"
         >
           <PlayIcon className="h-4 w-4 translate-x-[1px]" />
           {playingWholeLibrary ? "Playing" : "Play all"}

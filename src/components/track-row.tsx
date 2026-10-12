@@ -6,7 +6,8 @@ import { usePlayer } from "@/context/player-context";
 import { useToast } from "@/context/toast-context";
 // Playlists are paused: TrashIcon was only used by the remove-from-playlist button.
 // import { MoreIcon, PlayIcon } from "@/components/icons";
-import { MoreIcon, PlayIcon } from "@/components/icons";
+import { CloseIcon, EqualizerIcon, MoreIcon, PauseIcon, PlayIcon } from "@/components/icons";
+import { useModal } from "@/components/use-modal";
 import { CoverArt } from "@/components/cover-art";
 import { formatTime, type TrackWithUrls } from "@/lib/tracks";
 
@@ -28,6 +29,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useModal(menuOpen, () => setMenuOpen(false));
 
   // Listening is public, but anything that writes needs a signed in admin.
   const canEdit = Boolean(user);
@@ -36,7 +38,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
   useEffect(() => {
     if (!menuOpen) return;
 
-    const onClick = (event: MouseEvent) => {
+    const onClick = (event: PointerEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
     };
 
@@ -44,11 +46,11 @@ export function TrackRow({ track, index }: TrackRowProps) {
       if (event.key === "Escape") setMenuOpen(false);
     };
 
-    document.addEventListener("mousedown", onClick);
+    document.addEventListener("pointerdown", onClick);
     document.addEventListener("keydown", onKey);
 
     return () => {
-      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("pointerdown", onClick);
       document.removeEventListener("keydown", onKey);
     };
   }, [menuOpen]);
@@ -80,28 +82,27 @@ export function TrackRow({ track, index }: TrackRowProps) {
       onPointerEnter={() => prepare(track)}
       onFocus={() => prepare(track)}
       onTouchStart={() => prepare(track)}
-      className={`group grid grid-cols-[16px_minmax(0,4fr)_minmax(0,3fr)_auto] items-center gap-4 rounded-md px-2 py-2 transition md:grid-cols-[16px_minmax(0,6fr)_minmax(0,4fr)_minmax(0,3fr)_auto] ${
+      className={`group grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-1 rounded-md px-1 py-2 transition lg:grid-cols-[44px_minmax(0,6fr)_minmax(0,4fr)_64px_44px] lg:gap-3 lg:px-2 ${
         isCurrent ? "bg-card-hover" : "hover:bg-card"
       }`}
     >
       <button
         type="button"
         onClick={() => isCurrent ? toggle() : playFromLibrary()}
-        className="flex h-4 w-4 items-center justify-center text-muted transition hover:text-text"
+        className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition hover:text-text"
         aria-label={isCurrent && isPlaying ? `Pause ${track.title}` : `Play ${track.title}`}
       >
         {isCurrent && isPlaying ? (
-          <span className="flex h-3.5 w-3.5 items-end justify-between text-accent-soft" aria-hidden="true">
-            <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
-            <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
-            <span className="equalizer-bar h-full w-[2px] rounded-sm bg-current" />
-          </span>
+          <>
+            <PauseIcon className="h-4 w-4 text-accent-soft lg:hidden" />
+            <EqualizerIcon className="hidden text-accent-soft lg:flex" />
+          </>
         ) : (
           <>
-            <span className="text-sm tabular-nums group-hover:hidden">
+            <span className="hidden text-sm tabular-nums lg:block lg:group-hover:hidden lg:group-focus-within:hidden">
               {index === undefined ? "•" : index + 1}
             </span>
-            <PlayIcon className="hidden h-3.5 w-3.5 group-hover:block" />
+            <PlayIcon className="h-4 w-4 lg:hidden lg:group-hover:block lg:group-focus-within:block" />
           </>
         )}
       </button>
@@ -115,7 +116,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
             if (!isCurrent) playFromLibrary();
             setNowPlayingOpen(true);
           }}
-          className="flex min-w-0 flex-1 items-center gap-3 rounded text-left transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded text-left lg:gap-3 transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           aria-label={`Show ${track.title}`}
         >
           <CoverArt
@@ -123,7 +124,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
             title={track.title}
             className="h-10 w-10 shrink-0"
           />
-          <span className="min-w-0">
+          <span className="min-w-0 flex-1">
             <span
               className={`block truncate text-sm font-medium ${
                 isCurrent ? "text-accent-soft" : "text-text"
@@ -136,9 +137,9 @@ export function TrackRow({ track, index }: TrackRowProps) {
         </button>
       </div>
 
-      <p className="hidden truncate text-sm text-muted md:block">{track.album ?? "—"}</p>
+      <p className="hidden truncate text-sm text-muted lg:block">{track.album ?? "—"}</p>
 
-      <p className="hidden text-sm tabular-nums text-muted md:block">
+      <p className="hidden text-sm tabular-nums text-muted lg:block">
         {formatTime(track.duration)}
       </p>
 
@@ -151,7 +152,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
               void removeFromPlaylist(playlistId, track.id);
               onRemoved?.();
             }}
-            className="rounded-full p-2 text-muted transition hover:text-text"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:text-text"
             aria-label={`Remove ${track.title} from this playlist`}
           >
             <TrashIcon className="h-4 w-4" />
@@ -163,15 +164,22 @@ export function TrackRow({ track, index }: TrackRowProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="rounded-full p-2 text-muted transition hover:text-text"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:text-text"
             aria-label={`More options for ${track.title}`}
             aria-expanded={menuOpen}
           >
-            <MoreIcon className="h-4 w-4" />
+            <MoreIcon className="h-5 w-5" />
           </button>
 
           {menuOpen ? (
-            <div className="absolute right-0 top-10 z-30 w-60 overflow-hidden rounded-lg border border-line bg-elevated py-1 text-sm shadow-2xl shadow-black/60">
+            <>
+            <button type="button" aria-label="Close song options" onClick={() => setMenuOpen(false)} className="fixed inset-0 z-[75] bg-black/60 lg:hidden" />
+            <div ref={sheetRef} role="dialog" aria-modal="true" aria-label={`Options for ${track.title}`} tabIndex={-1}
+              className="safe-inline fixed inset-x-0 bottom-0 z-[80] max-h-[80dvh] overflow-y-auto overscroll-contain rounded-t-2xl border border-line bg-elevated pb-[calc(12px+env(safe-area-inset-bottom))] pt-3 text-sm shadow-2xl shadow-black/60 lg:absolute lg:inset-x-auto lg:right-0 lg:bottom-auto lg:top-12 lg:w-60 lg:rounded-lg lg:py-1">
+              <div className="mb-2 flex min-w-0 items-center gap-3 border-b border-line px-3 pb-2 lg:hidden">
+                <span className="min-w-0 flex-1 truncate font-semibold">{track.title}</span>
+                <button type="button" aria-label="Close song options" onClick={() => setMenuOpen(false)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted"><CloseIcon className="h-5 w-5" /></button>
+              </div>
               <MenuItem
                 label="Add to queue"
                 onClick={() => {
@@ -237,6 +245,7 @@ export function TrackRow({ track, index }: TrackRowProps) {
                 </div>
               ) : null}
             </div>
+            </>
           ) : null}
         </div>
       </div>
@@ -262,7 +271,7 @@ function MenuItem({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition disabled:cursor-default ${
+      className={`flex w-full items-center justify-between min-h-11 gap-2 px-3 py-3 text-left transition disabled:cursor-default ${
         tone === "danger" ? "text-red-400" : "text-text"
       } ${disabled ? "text-dim" : "hover:bg-card-hover"}`}
     >

@@ -212,7 +212,7 @@ export default function PlaylistPage() {
       </p>
       <Link
         href="/library"
-        className="rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover"
+        className="inline-flex min-h-11 items-center rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover"
       >
         Back to your library
       </Link>

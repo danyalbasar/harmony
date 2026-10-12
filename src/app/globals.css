@@ -17,6 +17,34 @@
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  --mobile-nav-height: calc(64px + env(safe-area-inset-top, 0px));
+  --player-height: calc(120px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  :root { --player-height: calc(96px + env(safe-area-inset-bottom, 0px)); }
+}
+
+.safe-inline {
+  padding-left: max(var(--page-gutter, 12px), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--page-gutter, 12px), env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 640px) {
+  .page-content { --page-gutter: 24px; }
+}
+
+html { scroll-padding-top: var(--mobile-nav-height); }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+button, a { touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--color-accent-soft); outline-offset: 3px; }
+
+@media (max-width: 1023px) {
+  body { background-attachment: scroll; }
+  input:not([type="range"]):not([type="file"]), textarea, select { font-size: 16px; }
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #3a3159 transparent;
@@ -61,6 +89,9 @@ input[type="range"] {
   appearance: none;
   background: transparent;
   cursor: pointer;
+  min-width: 0;
+  height: 32px;
+  touch-action: pan-y;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
@@ -136,3 +167,8 @@ input[type="range"]:focus-visible::-moz-range-thumb {
    prefers-reduced-motion, which left them static on laptops with Windows
    "Animation effects" off. The motion here is just two bars scaling in
    place, so it is kept even when the OS asks for reduced motion. */
+
+@media (max-width: 1023px), (pointer: coarse) {
+  input[type="range"]::-webkit-slider-thumb { opacity: 1; }
+  input[type="range"]::-moz-range-thumb { opacity: 1; }
+}

@@ -28,7 +28,7 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
       onPointerEnter={() => prepare(track)}
       onFocus={() => prepare(track)}
       onTouchStart={() => prepare(track)}
-      className="group relative rounded-lg bg-card p-3 transition hover:bg-card-hover"
+      className="group relative min-w-0 rounded-lg bg-card p-2 transition sm:p-3 hover:bg-card-hover"
     >
       <div className="relative">
         <button
@@ -66,7 +66,7 @@ export function TrackCard({ track, tracks }: TrackCardProps) {
         </button>
       </div>
 
-      <p className={`mt-4 truncate text-sm font-semibold ${isCurrent ? "text-accent-soft" : "text-text"}`}>
+      <p title={track.title} className={`mt-3 truncate text-sm font-semibold ${isCurrent ? "text-accent-soft" : "text-text"}`}>
         {track.title}
       </p>
       <p className="truncate text-xs text-muted">

@@ -41,16 +41,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {/* min-h-dvh rather than min-h-screen: on mobile vh measures the viewport
-          with the URL bar showing, so scrolling down leaves a gap. */}
-      <div className="flex min-h-dvh flex-col pb-24">
+      <div className="flex min-h-dvh flex-col pb-[calc(var(--player-height)+16px)]">
         <div className="flex flex-1">
           <Sidebar />
-          <main className="min-w-0 flex-1 pb-8 pl-0 md:pl-60">
-            {/* The fixed mobile nav is about 37px tall, so this is the space
-                below it. pt-20 keeps page headings clear of it, and drops back
-                to pt-6 from md up where the nav is hidden. */}
-            <div className="mx-auto w-full max-w-[1600px] px-4 pt-20 sm:px-6 md:pt-6">
+          <main className="min-w-0 flex-1 pb-8 pl-0 lg:pl-60">
+            <div className="safe-inline page-content mx-auto w-full max-w-[1600px] pt-[calc(var(--mobile-nav-height)+20px)] lg:pt-6">
               <MobileNav />
               {children}
             </div>

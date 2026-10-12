@@ -91,7 +91,7 @@ function Admin() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col items-center px-4 py-10">
+    <div className="flex safe-inline min-h-dvh flex-col items-center pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(24px,env(safe-area-inset-top))] sm:py-10">
       <div className="w-full max-w-3xl">
         {stage === "login" ? (
           <Card
@@ -106,7 +106,6 @@ function Admin() {
                 onChange={setUsername}
                 placeholder="your username"
                 autoComplete="username"
-                autoFocus
               />
               <Field
                 label="Password"
@@ -126,7 +125,7 @@ function Admin() {
             <header className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">Admin</h1>
-                <p className="mt-1 text-sm text-muted">
+                <p className="mt-1 break-words text-sm text-muted">
                   Signed in as{" "}
                   <span className="text-accent-soft">
                     {user?.user_metadata?.username ?? user?.email}
@@ -138,7 +137,7 @@ function Admin() {
                 onClick={() => {
                   void signOut().then(() => setStage("login"));
                 }}
-                className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-muted transition hover:border-accent hover:text-text"
+                className="min-h-11 rounded-full border border-line px-4 py-2 text-sm font-semibold text-muted transition hover:border-accent hover:text-text"
               >
                 Sign out
               </button>
@@ -186,7 +185,7 @@ function Admin() {
                               ),
                             );
                         }}
-                        className="rounded-full p-2 text-dim transition hover:bg-red-500/10 hover:text-red-400"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-dim transition hover:bg-red-500/10 hover:text-red-400"
                         aria-label={`Delete ${track.title}`}
                       >
                         <TrashIcon className="h-4 w-4" />
@@ -206,7 +205,7 @@ function Admin() {
         ) : null}
 
         <p className="mt-10 text-center text-xs text-dim">
-          <Link href="/" className="transition hover:text-muted">
+          <Link href="/" className="inline-flex min-h-11 items-center px-3 transition hover:text-muted">
             ← back to the music
           </Link>
         </p>
@@ -233,7 +232,7 @@ function Card({
           {icon}
         </span>
         <h1 className="text-xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-1 text-sm text-muted">{subtitle}</p>
+        <p className="mt-1 break-words text-sm text-muted">{subtitle}</p>
       </div>
 
       <div className="rounded-2xl border border-line bg-elevated/60 p-5">{children}</div>
@@ -268,7 +267,7 @@ function Field({
         autoFocus={autoFocus}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="rounded-md border border-line bg-card px-3 py-2.5 text-sm text-text placeholder:text-dim focus:border-accent focus:outline-none"
+        className="min-h-12 min-w-0 w-full rounded-md border border-line bg-card px-3 py-2.5 text-sm text-text placeholder:text-dim focus:border-accent focus:outline-none"
       />
     </label>
   );
@@ -279,7 +278,7 @@ function Submit({ busy, label }: { busy: boolean; label: string }) {
     <button
       type="submit"
       disabled={busy}
-      className="flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-black transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
     >
       {busy ? <MusicIcon className="h-4 w-4 animate-pulse" /> : <LockIcon className="h-4 w-4" />}
       {busy ? "Checking…" : label}

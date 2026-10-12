@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSleep } from "@/context/sleep-context";
-import { RainIcon } from "@/components/icons";
+import { CloseIcon, RainIcon } from "@/components/icons";
 import { SLEEP_PRESETS } from "@/lib/sleep-sounds";
 
 export function SleepButton() {
@@ -13,17 +13,17 @@ export function SleepButton() {
   useEffect(() => {
     if (!open) return;
 
-    const onPointerDown = (event: MouseEvent) => {
+    const onPointerDown = (event: PointerEvent) => {
       if (!panelRef.current?.contains(event.target as Node)) setOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
 
-    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
@@ -31,12 +31,16 @@ export function SleepButton() {
   if (!supported) return null;
 
   return (
-    <div className="pointer-events-none fixed bottom-24 right-4 z-50 sm:right-6" ref={panelRef}>
+    <div className="pointer-events-none fixed bottom-[calc(var(--player-height)+12px)] right-[max(12px,env(safe-area-inset-right))] z-50 sm:right-6" ref={panelRef}>
       {open ? (
-        <div className="pointer-events-auto mb-2 w-64 origin-bottom-right rounded-xl border border-line bg-elevated p-3 shadow-2xl">
-          <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wide text-muted">
-            Rain sounds
-          </p>
+        <div className="pointer-events-auto mb-2 max-h-[calc(100dvh-var(--player-height)-var(--mobile-nav-height)-72px)] w-[min(288px,calc(100vw-24px))] origin-bottom-right overflow-y-auto overscroll-contain rounded-xl border border-line bg-elevated p-3 shadow-2xl">
+          <div className="flex items-center justify-between gap-2 px-1 pb-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Rain sounds</p>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close rain sounds" className="flex h-11 w-11 items-center justify-center rounded-full text-muted"><CloseIcon className="h-4 w-4" /></button>
+          </div>
+          <button type="button" onClick={toggle} aria-pressed={playing} className="mb-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-accent px-3 text-sm font-semibold text-black lg:hidden">
+            <RainIcon className="h-4 w-4" />{playing ? "Stop rain" : "Play rain"}
+          </button>
 
           <ul className="flex flex-col gap-0.5">
             {SLEEP_PRESETS.map((option) => {
@@ -48,7 +52,7 @@ export function SleepButton() {
                     type="button"
                     onClick={() => select(option.id)}
                     aria-pressed={active}
-                    className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between gap-3 min-h-12 rounded-md px-3 py-3 text-left text-sm transition ${
                       active ? "bg-card text-text" : "text-muted hover:bg-card-hover hover:text-text"
                     }`}
                   >
@@ -92,7 +96,7 @@ export function SleepButton() {
 
       <div className="pointer-events-auto flex items-center justify-end gap-2">
         {playing ? (
-          <span className="hidden rounded-full border border-accent/40 bg-elevated px-3 py-2 text-xs font-medium text-accent-soft sm:block">
+          <span className="hidden rounded-full border border-accent/40 bg-elevated px-3 py-2 text-xs font-medium text-accent-soft lg:block">
             {preset.label}
           </span>
         ) : null}
@@ -102,7 +106,7 @@ export function SleepButton() {
           onClick={toggle}
           aria-pressed={playing}
           aria-label={playing ? `Stop ${preset.label}` : `Play ${preset.label}`}
-          className={`flex h-10 items-center gap-2 rounded-full border px-3 shadow-lg transition ${
+          className={`hidden h-11 items-center gap-2 rounded-full border px-3 shadow-lg transition lg:flex ${
             playing
               ? "border-accent/50 bg-accent text-black"
               : "border-line bg-elevated text-muted hover:border-accent/40 hover:text-text"
@@ -117,7 +121,7 @@ export function SleepButton() {
           onClick={() => setOpen((value) => !value)}
           aria-label="Choose a rain sound"
           aria-expanded={open}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-elevated text-muted shadow-lg transition hover:border-accent/40 hover:text-text"
+          className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-lg transition-colors ${playing ? "border-accent bg-accent text-black" : "border-line bg-elevated text-muted hover:border-accent/40 hover:text-text"}`}
         >
           <RainIcon className="h-4 w-4" />
         </button>

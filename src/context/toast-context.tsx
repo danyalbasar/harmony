@@ -50,7 +50,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
   return (
-    <div className="pointer-events-none fixed right-4 top-4 z-[60] flex w-[min(360px,calc(100vw-2rem))] flex-col gap-2">
+    <div className="pointer-events-none fixed right-[max(12px,env(safe-area-inset-right))] top-[calc(var(--mobile-nav-height)+8px)] z-[90] lg:top-4 flex w-[min(360px,calc(100vw-24px))] flex-col gap-2">
       {toasts.map((toast) => (
         <div
           key={toast.id}
@@ -61,11 +61,11 @@ function ToastList({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: num
               : "border-line bg-elevated text-text"
           }`}
         >
-          <span className="flex-1">{toast.message}</span>
+          <span className="min-w-0 flex-1 break-words">{toast.message}</span>
           <button
             type="button"
             onClick={() => onDismiss(toast.id)}
-            className="text-muted transition hover:text-text"
+            className="-mr-2 -mt-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:text-text"
             aria-label="Dismiss"
           >
             <CloseIcon className="h-4 w-4" />

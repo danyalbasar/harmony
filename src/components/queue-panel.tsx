@@ -1,13 +1,17 @@
 "use client";
 
+import { useModal } from "@/components/use-modal";
 import { usePlayer } from "@/context/player-context";
 import { CoverArt } from "@/components/cover-art";
 import { CloseIcon, EqualizerIcon } from "@/components/icons";
 import { formatTime } from "@/lib/tracks";
 
 export function QueuePanel() {
-  const { queue, queueIndex, current, isPlaying, queueOpen, setQueueOpen, removeFromQueue, clearUpcoming, play } =
+  const { queue, queueIndex, current, isPlaying, queueOpen, setQueueOpen, removeFromQueue, clearUpcoming, play, prepare } =
     usePlayer();
+
+  const dialogRef = useModal<HTMLElement>(queueOpen, () => setQueueOpen(false));
+  if (!queueOpen) return null;
 
   const upcoming = queue.slice(queueIndex + 1);
 
@@ -18,22 +22,24 @@ export function QueuePanel() {
           type="button"
           aria-label="Close queue"
           onClick={() => setQueueOpen(false)}
-          className="fixed inset-0 z-40 hidden bg-black/50 md:block"
+          className="fixed inset-0 z-[65] bg-black/60"
         />
       ) : null}
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-[calc(100%-96px)] w-full max-w-sm flex-col border-l border-line bg-elevated transition-transform duration-200 md:h-[calc(100%-88px)] ${
-          queueOpen ? "translate-x-0" : "pointer-events-none translate-x-full"
-        }`}
-        aria-hidden={!queueOpen}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Queue"
+        tabIndex={-1}
+        className="safe-inline fixed inset-0 z-[70] flex h-dvh w-full flex-col bg-elevated pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] lg:left-auto lg:bottom-[var(--player-height)] lg:h-auto lg:max-w-sm lg:border-l lg:border-line"
       >
         <header className="flex items-center justify-between px-4 py-3">
-          <h2 className="text-base font-semibold">Queue</h2>
+          <h2 className="text-[16px] font-semibold text-text">Queue</h2>
           <button
             type="button"
             onClick={() => setQueueOpen(false)}
-            className="rounded-full p-1.5 text-muted transition hover:text-text"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition hover:text-text"
             aria-label="Close queue"
           >
             <CloseIcon className="h-4 w-4" />
@@ -65,7 +71,7 @@ export function QueuePanel() {
               <button
                 type="button"
                 onClick={clearUpcoming}
-                className="text-xs text-muted underline-offset-4 transition hover:text-text hover:underline"
+                className="min-h-11 px-3 text-sm text-muted underline-offset-4 transition hover:text-text hover:underline"
               >
                 Clear
               </button>
@@ -77,7 +83,7 @@ export function QueuePanel() {
               Nothing queued. Hit play on a song or add one from the ⋯ menu.
             </p>
           ) : (
-            <ul className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
+            <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-0 pb-4">
               {upcoming.map((track, offset) => {
                 const index = queueIndex + 1 + offset;
 
@@ -89,7 +95,9 @@ export function QueuePanel() {
                     <button
                       type="button"
                       onClick={() => play(queue, index)}
-                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                      className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
+                      onPointerEnter={() => prepare(track)}
+                      onFocus={() => prepare(track)}
                     >
                       <CoverArt
                         src={track.coverUrl}
@@ -109,7 +117,7 @@ export function QueuePanel() {
                     <button
                       type="button"
                       onClick={() => removeFromQueue(index)}
-                      className="rounded-full p-1.5 text-muted opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-text"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:text-text"
                       aria-label={`Remove ${track.title} from the queue`}
                     >
                       <CloseIcon className="h-3.5 w-3.5" />

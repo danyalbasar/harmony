@@ -31,6 +31,7 @@ export function CoverArt({
       alt={`Cover art for ${title}`}
       className={`object-cover ${rounded} ${className}`}
       loading="lazy"
+      decoding="async"
     />
   );
 }

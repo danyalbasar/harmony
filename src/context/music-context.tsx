@@ -89,15 +89,16 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const supabase = createClient();
     let active = true;
 
+    // The catalogue is public: fetch once on mount rather than again for every
+    // session callback or token refresh, and start before auth has resolved.
+    void refreshLibrary();
+
     const handleSession = (nextSession: Session | null) => {
       if (!active) return;
 
       setSession(nextSession);
       setLoading(false);
 
-      // The catalogue is public now, so it is loaded for signed out visitors
-      // too. Writing still needs a session, but reading never did.
-      void refreshLibrary();
     };
 
     void supabase.auth.getSession().then(({ data }) => {
